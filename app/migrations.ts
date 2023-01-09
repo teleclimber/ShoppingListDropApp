@@ -17,6 +17,7 @@ export default function createMigrations() {
 				"image" TEXT,
 				"category_id" INTEGER,
 				"check_stock" INTEGER,
+				"deleted" DATETIME,
 				"cur_status" TEXT
 			)`);
 	
@@ -32,6 +33,7 @@ export default function createMigrations() {
 			"image" TEXT,
 			"category_id" INTEGER
 			"check_stock" INTEGER,
+			"deleted" DATETIME
 		)`);
 		// index on item_id, proxy_id, datetime
 
