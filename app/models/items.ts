@@ -1,9 +1,10 @@
-import getDB from './db.ts';
+import {db} from '../db.ts';
 
 export enum ItemStatus {
 	stocked = "stocked",
 	buy = "buy"
 }
+// add a "in cart" status
 
 export interface ItemData {
 	[key: string]: string|number|boolean|Date|null;
@@ -16,12 +17,11 @@ export interface ItemData {
 }
 
 export interface Item extends ItemData {
-	id: number,
-	cur_status: number
+	item_id: number,
+	cur_status: string
 }
 
 interface InsertItem extends ItemData {
-	proxy_id: string,
 	cur_status: string
 }
 
@@ -29,13 +29,13 @@ interface UpdateItem extends ItemData {
 	item_id: number
 }
 
-interface InsertItemHistory extends ItemData {
+interface ItemHistory extends ItemData {
 	item_id: number,
 	proxy_id: string,
 	datetime: Date
 }
 
-interface InsertItemStatus {
+interface ItemStatusData {
 	[key: string]: string|number|boolean|Date;
 	item_id: number,
 	proxy_id: string,
@@ -50,13 +50,11 @@ INSERT INTO items
 `;
 
 export function createItem(proxy_id:string, data: ItemData, cur_status: ItemStatus) :number {
-	const db = getDB();
-
 	let item_id = -1;
-	db.transaction( () => {
-		const ins_item :InsertItem = Object.assign({proxy_id, cur_status}, data)
-		db.query(insertItemSQL, ins_item);
-		item_id = db.lastInsertRowId;
+	db.handle.transaction( () => {
+		const ins_item :InsertItem = Object.assign({cur_status}, data)
+		db.handle.query(insertItemSQL, ins_item);
+		item_id = db.handle.lastInsertRowId;
 
 		const datetime = new Date;
 		insertItemHistory(item_id, proxy_id, datetime, data);
@@ -79,10 +77,9 @@ WHERE item_id=:item_id
 `;
 
 export function updateItem(item_id:number, proxy_id:string, data: ItemData) {
-	const db = getDB();
-	db.transaction( () => {
+	db.handle.transaction( () => {
 		const update_item :UpdateItem = Object.assign({item_id}, data)
-		db.query(updateItemSQL, update_item);
+		db.handle.query(updateItemSQL, update_item);
 		insertItemHistory(item_id, proxy_id, new Date, data);
 	});
 }
@@ -94,9 +91,8 @@ WHERE item_id=:item_id
 `;
 
 export function updateItemStatus(item_id:number, proxy_id:string, status: string) {
-	const db = getDB();
-	db.transaction( () => {
-		db.query(updateItemStatusSQL, {item_id, status});
+	db.handle.transaction( () => {
+		db.handle.query(updateItemStatusSQL, {item_id, status});
 		insertItemStatus(item_id, proxy_id, new Date, status);
 	});
 }
@@ -107,14 +103,34 @@ INSERT INTO items_history
 (:item_id,  :proxy_id,  :datetime,  :name,  :description,  :image,  :category_id,  :check_stock,  :deleted)
 `;
 function insertItemHistory(item_id:number, proxy_id:string, datetime:Date, data:ItemData) {
-	const db = getDB();
-	const ins_history :InsertItemHistory = Object.assign({item_id, proxy_id, datetime}, data);
-	db.query(insertItemHistorySQL, ins_history);
+	const ins_history :ItemHistory = Object.assign({item_id, proxy_id, datetime}, data);
+	db.handle.query(insertItemHistorySQL, ins_history);
 }
 
 function insertItemStatus(item_id: number, proxy_id: string, datetime:Date, status:string) {
-	const db = getDB();
-	const ins_status :InsertItemStatus = {item_id, proxy_id, datetime, status};
-	db.query('INSERT INTO items_status ("item_id", "proxy_id", "datetime", "status") '
+	const ins_status :ItemStatusData = {item_id, proxy_id, datetime, status};
+	db.handle.query('INSERT INTO items_status ("item_id", "proxy_id", "datetime", "status") '
 		+' VALUES (:item_id, :proxy_id, :datetime, :status)', ins_status);
+}
+
+// TODO delete item
+
+// getters:
+export function getItems() {
+	const rows = db.handle.queryEntries<Item>('SELECT * FROM items');
+	rows.forEach( r => r.check_stock = !!r.check_stock );	// make check_stock an actual boolean (it comes out as integer from DB)
+	return rows;
+}
+
+export function getItemHistory(item_id: number) {
+	const rows = db.handle.queryEntries<ItemHistory>('SELECT * FROM items_history WHERE item_id = :item_id', {item_id});
+	// TODO order by datetime descending, then also allow paging.
+	rows.forEach( r => r.check_stock = !!r.check_stock );	// make check_stock an actual boolean (it comes out as integer from DB)
+	return rows;
+}
+
+export function getStatusHistory(item_id: number) {
+	const rows = db.handle.queryEntries<ItemStatusData>('SELECT * FROM items_status WHERE item_id = :item_id', {item_id});
+	// TODO order by datetime descending, then also allow paging.
+	return rows;
 }
