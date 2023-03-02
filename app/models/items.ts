@@ -1,47 +1,8 @@
 import {db} from '../db.ts';
+import { ItemStatus, ItemData,InsertItem, UpdateItem, ItemHistory, ItemStatusData, Item } from '../types.ts';
 
-export enum ItemStatus {
-	stocked = "stocked",
-	buy = "buy"
-}
 // add a "in cart" status
 
-export interface ItemData {
-	[key: string]: string|number|boolean|Date|null;
-	name: string,
-	description: string,
-	image: string,
-	category_id: number,
-	check_stock: boolean,
-	deleted: Date|null
-}
-
-export interface Item extends ItemData {
-	item_id: number,
-	cur_status: string
-}
-
-interface InsertItem extends ItemData {
-	cur_status: string
-}
-
-interface UpdateItem extends ItemData {
-	item_id: number
-}
-
-interface ItemHistory extends ItemData {
-	item_id: number,
-	proxy_id: string,
-	datetime: Date
-}
-
-interface ItemStatusData {
-	[key: string]: string|number|boolean|Date;
-	item_id: number,
-	proxy_id: string,
-	datetime: Date,
-	status: string
-}
 
 const insertItemSQL = `
 INSERT INTO items

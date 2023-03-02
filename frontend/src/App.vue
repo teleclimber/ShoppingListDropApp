@@ -20,7 +20,10 @@
 
 			<router-view/>
 		</main>
-		<footer></footer>
+		<footer class="mt-72">
+			<a target="_blank" href="https://icons8.com/icon/LLwOlK0zMIxj/grocery-shelf">Grocery Shelf</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+			<a target="_blank" href="https://icons8.com/icon/byZmliYnyFPz/fast-cart">Fast Cart</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+		</footer>
 		<!-- <RequestErrorOverlay></RequestErrorOverlay> -->
 		
 	</div>

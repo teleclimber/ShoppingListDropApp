@@ -1,16 +1,16 @@
 <script setup lang="ts">
-	// filters?
-	// - status (buy / stocked)
-	// - store?
+	import ActiveItems from './ActiveItems.vue';
+	import QuickAdd from './QuickAdd.vue';
+	
 
 
 </script>
 
 
 <template>
-	<div>
-		Active items
-	</div>
+	<QuickAdd></QuickAdd>
+	<ActiveItems></ActiveItems>
+
 </template>
 
-
+  
