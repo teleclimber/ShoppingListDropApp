@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, Ref, watch, isReactive, onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
-import { addItem } from '../models/items';
-import { getAllCategories } from '../models/categories';
-import { getStores } from '../models/stores';
+import { useItemsStore } from '../stores/items';
+import { useCategoriesStore } from '../stores/categories';
+import { useStoresStore } from '../stores/stores';
 import { ItemStatus } from '../../../app/types';
 
 const router = useRouter();
@@ -36,10 +36,10 @@ watch(props, setInitialValues);
 // - track stock ("consumable")
 // And a button to finally add
 
-const categories = getAllCategories();
-const stores = getStores();
+const categoriesStore = useCategoriesStore();
+const itemsStore = useItemsStore();
 
-
+const storesStore = useStoresStore();
 
 const name = ref("");
 const description = ref("");
@@ -57,7 +57,7 @@ function submitClicked() {
 		return;
 	}
 
-	addItem({
+	itemsStore.addItem({
 		name: n,
 		description: description.value,
 		image: "",
@@ -114,7 +114,7 @@ function statusClass(s :ItemStatus) :string[] {
 			<div class="mt-1">
 				<select id="category" v-model="category_id">
 					<option :value="-1">None</option>
-					<option v-for="cat in categories" :value="cat.category_id">{{ cat.name }}</option>
+					<option v-for="cat in categoriesStore.categories" :value="cat.category_id">{{ cat.name }}</option>
 				</select>
 			</div>
 		</div>
@@ -125,7 +125,7 @@ function statusClass(s :ItemStatus) :string[] {
 			</label>
 			<div class="mt-1">
 				<select id="stores" multiple v-model="store_ids">
-					<option v-for="store in stores" :value="store.store_id">{{ store.name }}</option>
+					<option v-for="store in storesStore.stores" :value="store.store_id">{{ store.name }}</option>
 				</select>
 			</div>
 		</div>

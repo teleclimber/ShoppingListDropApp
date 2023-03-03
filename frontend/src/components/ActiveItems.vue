@@ -1,14 +1,14 @@
 <script setup lang="ts">
-	import { getItems, setItemStatus } from '../models/items';
-	import { getStores } from '../models/stores';
+	import { useItemsStore } from '../stores/items';
+	import { useStoresStore } from '../stores/stores';
 	import { ItemPlus, ItemStatus } from '../../../app/types';
 	import { Ref, ref } from 'vue';
 
 	const expanded_item :Ref<number|undefined> = ref();
 
-	const items = getItems();	// this will have to be "augmented item" or some such, so we can get stores too.
+	const itemsStore = useItemsStore();
 
-	const stores = getStores();
+	const storesStore = useStoresStore();
 
 	interface Store {
 		store_id: number,
@@ -31,15 +31,15 @@
 		// navigate..
 	}
 	function setToBuy(item_id:number) {
-		setItemStatus(item_id, ItemStatus.buy);
+		itemsStore.setItemStatus(item_id, ItemStatus.buy);
 	}
 	function setToStocked(item_id:number) {
-		setItemStatus(item_id, ItemStatus.stocked);
+		itemsStore.setItemStatus(item_id, ItemStatus.stocked);
 	}
 </script>
 
 <template>
-	<div v-for="item in items" class="p-2 border-b relative">
+	<div v-for="[_, item] in itemsStore.items" class="p-2 border-b relative">
 		<div class="flex justify-between">
 			<h2 class="font-bold">{{ item.value.name }}</h2>
 			<span class="flex">

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from '@vue/reactivity';
-import { getStore } from '../models/stores';
+import { useStoresStore } from '../stores/stores';
 const props = defineProps<{
 	store_id: number,
 }>();
+
+const {getStore} = useStoresStore();
 
 const store = computed( () => {
 	return getStore( props.store_id );

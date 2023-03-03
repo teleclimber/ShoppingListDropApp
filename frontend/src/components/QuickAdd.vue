@@ -2,7 +2,7 @@
 	import {ref, shallowRef, Ref, watch } from "vue";
 	import { useRouter } from 'vue-router';
 	import {Item} from '../../../app/types';
-	import { getItems } from "../models/items";
+	import { useItemsStore } from "../stores/items";
 
 	const router = useRouter();
 
@@ -31,7 +31,7 @@
 
 	const show_popup = ref(false);
 
-	const items = getItems();
+	const itemsStore = useItemsStore();
 
 	const search = ref("");
 	watch( search, (s) => {
