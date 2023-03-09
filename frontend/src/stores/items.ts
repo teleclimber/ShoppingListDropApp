@@ -1,6 +1,6 @@
-import { ShallowRef, shallowRef } from 'vue';
+import { ShallowRef, shallowRef, computed } from 'vue';
 import { defineStore } from 'pinia';
-import {ItemPlus, AddItem, ItemStatus} from '../../../app/types';
+import {ItemPlus, AddItem, UpdateItem, ItemStatus} from '../../../app/types';
 
 export const useItemsStore = defineStore('items', () => {
 	
@@ -14,7 +14,7 @@ export const useItemsStore = defineStore('items', () => {
 		category_id: 4,
 		check_stock: true,
 		deleted: null,
-		store_ids: []
+		store_ids: [1]
 	}));
 	it.set(2, shallowRef({
 		item_id: 2,
@@ -25,9 +25,17 @@ export const useItemsStore = defineStore('items', () => {
 		category_id: 5,
 		check_stock: true,
 		deleted: null,
-		store_ids: []
+		store_ids: [2,3]
 	}));
 	const items :ShallowRef<Map<number,ShallowRef<ItemPlus>>> = shallowRef(it);
+
+	const ordered_items = computed( () => {
+		const ret :ShallowRef<ItemPlus>[] = [];
+		items.value.forEach( i => {
+			ret.push(i);
+		});
+		return ret;
+	})
 
 	let next_item_id = 3;
 	
@@ -46,7 +54,14 @@ export const useItemsStore = defineStore('items', () => {
 		next_item_id++;
 		const item = Object.assign({item_id}, add_item)
 		items.value.set(item_id, shallowRef(item));
+		items.value = new Map(items.value);
 		return item_id;
+	}
+	function editItem(update_item: ItemPlus) {
+		const item_id = update_item.item_id;
+		const item = mustGetItem(item_id);
+		item.value = update_item;
+		// Will need to do some work on the backend to update all the tables as needed
 	}
 	
 	function setItemStatus(item_id: number, cur_status: ItemStatus) {
@@ -54,5 +69,5 @@ export const useItemsStore = defineStore('items', () => {
 		item.value = Object.assign({}, item.value, {cur_status});
 	}
 
-	return {items, addItem, setItemStatus};
+	return {items, ordered_items, addItem, editItem, setItemStatus, getItem, mustGetItem};
 });

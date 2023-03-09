@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import ActiveItemsPage from '../components/ActiveItemsPage.vue';
-import AddItemPage from '../components/AddItemPage.vue';
+import AddEditItem from '../components/AddEditItem.vue';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -10,8 +10,20 @@ const routes: Array<RouteRecordRaw> = [
 	}, {
 		path: '/add',
 		name: 'add-item',
-		component: AddItemPage,
-		props: route => ({name: route.query.name})
+		component: AddEditItem,
+		props: route => ({mode:"add", start_name: route.query.name})
+	}, {
+		path: '/edit/:item_id',
+		name: 'edit-item',
+		component: AddEditItem,
+		props: route => {
+			const p = route.params.item_id;
+			if( Array.isArray(p) ) throw new Error("item_id can not be an array")
+			return {
+				mode: "edit",
+				item_id: parseInt(route.params.item_id as string)
+			}
+		}
 	}
 ];
 

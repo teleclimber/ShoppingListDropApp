@@ -9,14 +9,14 @@ export interface ItemData {
 	name: string,
 	description: string,
 	image: string,
-	category_id: number,
+	category_id: number,	// TODO consider making that number|null (we currently use -1)
 	check_stock: boolean,
 	deleted: Date|null
 }
 
 export interface Item extends ItemData {
 	item_id: number,
-	cur_status: string
+	cur_status: ItemStatus // TODO why string?
 }
 
 export interface ItemPlus extends Item {
@@ -24,7 +24,7 @@ export interface ItemPlus extends Item {
 }
 
 export interface InsertItem extends ItemData {
-	cur_status: string
+	cur_status: ItemStatus
 }
 
 export interface AddItem extends InsertItem {
@@ -46,5 +46,5 @@ export interface ItemStatusData {
 	item_id: number,
 	proxy_id: string,
 	datetime: Date,
-	status: string
+	status: ItemStatus
 }

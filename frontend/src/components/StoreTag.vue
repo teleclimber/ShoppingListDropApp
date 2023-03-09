@@ -15,13 +15,13 @@ const storeName = computed( () => {
 	return store.value === undefined ? '??' : store.value.name;
 })
 const classes = computed( () => {
-	if( store.value === undefined ) return ['bg-color-gray-50']
-	return ['bg-color-orange-200']
+	if( store.value === undefined ) return ['bg-gray-50']
+	return ['bg-purple-100']
 })
 
 </script>
 
 <template>
-	<span class="rounded-full px-2" :class="classes">{{ storeName }}</span>
+	<span class="rounded-md px-1 text-sm whitespace-nowrap overflow-hidden overflow-ellipsis" :class="classes">{{ storeName }}</span>
 
 </template>
