@@ -117,7 +117,7 @@
 						@click="setToBuy(s.value.item_id)">Buy</button>
 					<span v-else-if="s.value.cur_status === ItemStatus.buy"
 						class="flex align-bottom rounded-full px-2 pt-1 bg-red-800 text-white text-xs font-bold">
-						<img class="invert h-3 w-3" src="/icons8-fast-cart-24.png"/>
+						<img class="invert h-3 w-3" src="/static/icons8-fast-cart-24.png"/>
 						BUY
 					</span>
 					<span v-else>Item is set to {{ s.value.cur_status }}</span>

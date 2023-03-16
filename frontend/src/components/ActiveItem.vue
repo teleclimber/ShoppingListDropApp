@@ -37,7 +37,7 @@ function setToStocked(item_id:number) {
 		<div class="grid grid-cols-4">
 			<h2 class="font-bold col-span-3 overflow-hidden overflow-ellipsis" :class="{'whitespace-nowrap': !expanded}">{{ item.value.name }}</h2>
 			<span v-if="buy" class="flex justify-center px-3 mb-1 text-sm font-bold bg-yellow-300 self-start justify-self-end">
-				<img class=" h-4 w-4" src="/icons8-fast-cart-24.png"/>
+				<img class=" h-4 w-4" src="/static/icons8-fast-cart-24.png"/>
 				BUY
 			</span>
 			<span v-else>
