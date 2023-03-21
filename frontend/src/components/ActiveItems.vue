@@ -2,13 +2,14 @@
 	import { ShallowRef, Ref, ref, computed } from 'vue';
 	import { useItemsStore } from '../stores/items';
 	import { useCategoriesStore } from '../stores/categories';
-	import { ItemPlus } from '../../../app/types';
+	import { ItemPlus } from '../../../app/app_types';
 
 	import ActiveItem from './ActiveItem.vue';
 
 	const expanded_item :Ref<number|undefined> = ref();
 
 	const itemsStore = useItemsStore();
+	itemsStore.loadData();
 
 	const categoriesStore = useCategoriesStore();
 

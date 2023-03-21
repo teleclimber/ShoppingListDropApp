@@ -2,7 +2,8 @@ import { DB } from "https://deno.land/x/sqlite@v3.7.0/mod.ts";
 import { assertEquals } from "https://deno.land/std@0.172.0/testing/asserts.ts";
 import '../../ds_test/index.ts';
 import {db} from '../db.ts';
-import {ItemData, ItemStatus, createItem, updateItemStatus, getItems, getItemHistory, getStatusHistory} from './items.ts';
+import {createItem, updateItemStatus, getItems, getItemsPlus, getItemHistory, getStatusHistory} from './items.ts';
+import { ItemData, ItemStatus } from '../app_types.ts';
 import {upTo1} from '../migrations.ts';
 
 Deno.test({
@@ -22,13 +23,19 @@ Deno.test({
 			image:"def.jpg",
 			name: "item1"
 		};
-		const item_id = createItem(proxy_id, item_data, ItemStatus.stocked);
+		const item_id = createItem(proxy_id, item_data, ItemStatus.stocked, [22,77]);
 
 		const items = getItems();
 		if( items.length !== 1 ) throw new Error("expected one item");
 		const db_item = items[0];
 		const expected_item = Object.assign({item_id, cur_status:ItemStatus.stocked}, item_data);
 		assertEquals(db_item, expected_item);
+
+		const items_plus = getItemsPlus();
+		if( items_plus.length !== 1 ) throw new Error("expected one item");
+		const db_item_plus = items_plus[0];
+		const expected_item_plus = Object.assign({item_id, cur_status:ItemStatus.stocked, store_ids:[22, 77]}, item_data);
+		assertEquals(db_item_plus, expected_item_plus);
 
 		const item_history = getItemHistory(item_id);
 		if( item_history.length !== 1 ) throw new Error("expected one history item");

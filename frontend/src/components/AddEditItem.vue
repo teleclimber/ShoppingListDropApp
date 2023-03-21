@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useItemsStore } from '../stores/items';
 import { useCategoriesStore } from '../stores/categories';
 import { useStoresStore } from '../stores/stores';
-import { ItemStatus } from '../../../app/types';
+import { ItemStatus } from '../../../app/app_types';
 
 const router = useRouter();
 
@@ -54,7 +54,7 @@ onMounted( () => {
 	if( name_input.value ) name_input.value.focus();
 });
 
-function submitClicked() {
+async function submitClicked() {
 	// name can't be blank
 	// ideally name should be unique? Or not?
 	const n = name.value.trim();
@@ -64,7 +64,7 @@ function submitClicked() {
 	}
 
 	if( props.mode === "add" ) {
-		itemsStore.addItem({
+		await itemsStore.addItem({
 			name: n,
 			description: description.value,
 			image: "",
@@ -77,8 +77,7 @@ function submitClicked() {
 	}
 	else if( props.mode === "edit" ) {
 		if( props.item_id === undefined ) throw new Error("ietm_id should not be undefined if mode is edit");
-		itemsStore.editItem({
-			item_id: props.item_id,
+		await itemsStore.editItem(props.item_id, {
 			name: n,
 			description: description.value,
 			image: "",

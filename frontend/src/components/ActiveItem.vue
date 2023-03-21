@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ShallowRef, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { ItemPlus, ItemStatus } from '../../../app/types';
+import { ItemPlus, ItemStatus } from '../../../app/app_types';
 import { useItemsStore } from '../stores/items';
 
 import StoreTag from './StoreTag.vue';

@@ -1,33 +1,28 @@
-import { ShallowRef, shallowRef, computed } from 'vue';
+import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import {ItemPlus, AddItem, UpdateItem, ItemStatus} from '../../../app/types';
+import { LoadState } from './common';
+import {ItemPlus, InsertItemPlus, ItemStatus, ItemData, ItemCurStatus, ItemStoreIds} from '../../../app/app_types';
 
 export const useItemsStore = defineStore('items', () => {
-	
-	const it :Map<number,ShallowRef<ItemPlus>> = new Map;
-	it.set(1, shallowRef({
-		item_id: 1,
-		cur_status: ItemStatus.buy,
-		name: "pasta",
-		description: "for ums",
-		image: "",
-		category_id: 4,
-		check_stock: true,
-		deleted: null,
-		store_ids: [1]
-	}));
-	it.set(2, shallowRef({
-		item_id: 2,
-		cur_status: ItemStatus.stocked,
-		name: "Tomato Sauce",
-		description: "for oli",
-		image: "",
-		category_id: 5,
-		check_stock: true,
-		deleted: null,
-		store_ids: [2,3]
-	}));
-	const items :ShallowRef<Map<number,ShallowRef<ItemPlus>>> = shallowRef(it);
+	const load_state = ref(LoadState.NotLoaded);
+	const is_loaded = computed( () => load_state.value === LoadState.Loaded );
+
+	const items :ShallowRef<Map<number,ShallowRef<ItemPlus>>> = shallowRef(new Map);
+
+	async function loadData() {
+		if( load_state.value !== LoadState.NotLoaded ) return;
+		load_state.value = LoadState.Loading;
+		const resp = await fetch("/api/items");
+		const json = await resp.json() as ItemPlus[];
+		if( !Array.isArray(json) ) throw new Error("expected array for dropds, got "+typeof resp.json);
+		const it :Map<number,ShallowRef<ItemPlus>> = new Map; 
+		json.forEach( (raw) => {
+			const d = itemPlusFromRaw(raw);
+			it.set(d.item_id, shallowRef(d));
+		});
+		items.value = it;
+		load_state.value = LoadState.Loaded;
+	}
 
 	const ordered_items = computed( () => {
 		const ret :ShallowRef<ItemPlus>[] = [];
@@ -37,8 +32,6 @@ export const useItemsStore = defineStore('items', () => {
 		return ret;
 	})
 
-	let next_item_id = 3;
-	
 	function getItem(item_id: number) :ShallowRef<ItemPlus>|undefined {
 		const item = items.value.get( item_id );
 		if( item ) return item;
@@ -49,25 +42,70 @@ export const useItemsStore = defineStore('items', () => {
 		return item;
 	}
 	
-	function addItem(add_item :AddItem) :number {
-		const item_id = next_item_id;
-		next_item_id++;
+	async function addItem(add_item :InsertItemPlus) :Promise<number> {
+		// const item_id = next_item_id;
+		// next_item_id++;
+		// Here I'd really like for the UI to be very fast.
+		// So idally don't wait for the server to respond.
+		const resp = await fetch("/api/items", {
+			method: "POST",
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			  },
+			  body: JSON.stringify(add_item)
+		});
+		if( !resp.ok ) throw new Error("did not get OK");
+		const data = await resp.json();
+		const item_id = data.item_id;
 		const item = Object.assign({item_id}, add_item)
 		items.value.set(item_id, shallowRef(item));
 		items.value = new Map(items.value);
 		return item_id;
 	}
-	function editItem(update_item: ItemPlus) {
-		const item_id = update_item.item_id;
+	async function editItem(item_id: number, update_item: ItemData & ItemCurStatus & ItemStoreIds) {
 		const item = mustGetItem(item_id);
-		item.value = update_item;
+		const resp = await fetch("/api/items/"+item_id, {
+			method: "PUT",
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			  },
+			  body: JSON.stringify(update_item)
+		});
+		if( !resp.ok ) throw new Error("did not get OK");
+		
+		item.value = Object.assign({item_id}, update_item );
 		// Will need to do some work on the backend to update all the tables as needed
 	}
 	
-	function setItemStatus(item_id: number, cur_status: ItemStatus) {
+	async function setItemStatus(item_id: number, cur_status: ItemStatus) {
 		const item = mustGetItem(item_id);
+		const resp = await fetch("/api/items/"+item_id, {
+			method: "PATCH",
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			  },
+			  body: JSON.stringify({cur_status})
+		});
+		if( !resp.ok ) throw new Error("did not get OK");
 		item.value = Object.assign({}, item.value, {cur_status});
 	}
 
-	return {items, ordered_items, addItem, editItem, setItemStatus, getItem, mustGetItem};
+	return {loadData, is_loaded, items, ordered_items, addItem, editItem, setItemStatus, getItem, mustGetItem};
 });
+
+function itemPlusFromRaw(data:any) :ItemPlus {
+	return {
+		item_id: Number(data.item_id),
+		cur_status: data.cur_status,
+		name: data.name+'',
+		description: data.description+'',
+		image: "",
+		category_id: Number(data.category_id),
+		check_stock: !!data.check_stock,
+		deleted: data.deleted ? new Date(data.Deleted) : null,
+		store_ids: Array.isArray(data.store_ids) ? data.store_ids.map( (s:any) => Number(s) ) : []
+	}
+}

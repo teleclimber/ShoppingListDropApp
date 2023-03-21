@@ -1,7 +1,7 @@
 import { ShallowRef, shallowRef } from 'vue';
 import { defineStore } from 'pinia';
 
-import { Store } from '../../../app/models/stores';
+import { Store } from '../../../app/app_types';
 
 export const useStoresStore = defineStore('stores', () => {
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import {ref, shallowRef, ShallowRef, Ref, watch } from "vue";
 	import { useRouter } from 'vue-router';
-	import {ItemPlus, ItemStatus} from '../../../app/types';
+	import {ItemPlus, ItemStatus} from '../../../app/app_types';
 	import { useItemsStore } from "../stores/items";
 
 	const router = useRouter();
@@ -39,6 +39,7 @@
 	const show_popup = ref(false);
 
 	const itemsStore = useItemsStore();
+	itemsStore.loadData();
 
 	const search = ref("");
 	watch( search, (s) => {
@@ -71,9 +72,11 @@
 
 	// quickAdd is the button that adds the item with least amount of interaction possible.
 	// I think this should the first item in the popup list of suggestions
-	function quickAddClicked() {
-		itemsStore.addItem({
-			name: search.value,
+	async function quickAddClicked() {
+		const item_name = search.value.trim();
+		if( item_name === "" ) return;
+		await itemsStore.addItem({
+			name: item_name,
 			description: "",
 			category_id: -1,
 			check_stock: false,
@@ -84,7 +87,6 @@
 		});
 		search.value = '';
 		selectAndFocus();
-
 	}
 	function addClicked() {
 		
