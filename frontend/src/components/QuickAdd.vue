@@ -122,6 +122,10 @@
 						<img class="invert h-3 w-3" src="/static/icons8-fast-cart-24.png"/>
 						BUY
 					</span>
+					<span v-else-if="s.value.cur_status === ItemStatus.inCart"
+						class="flex justify-center px-2 mb-1 text-xs font-bold rounded-full text-orange-50 bg-orange-400 self-start justify-self-end items-center">
+						IN CART
+					</span>
 					<span v-else>Item is set to {{ s.value.cur_status }}</span>
 
 				</div>

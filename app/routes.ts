@@ -1,5 +1,5 @@
 import { RoutesBuilder, AuthAllow } from 'https://deno.land/x/dropserver_app@v0.2.1/mod.ts';
-import { getAllItems, postItem, putItem, patchItemStatus } from './handlers/items.ts';
+import { getAllItems, postItem, putItem, patchItemStatus, patchBatchItemsStatus } from './handlers/items.ts';
 
 export default function createRoutes() {
 	const r = new RoutesBuilder;
@@ -10,6 +10,7 @@ export default function createRoutes() {
 	r.add('post', '/api/items', authorized, postItem );
 	r.add('put', '/api/items/:id', authorized, putItem );
 	r.add('patch', '/api/items/:id', authorized, patchItemStatus );
+	r.add('patch', '/api/items', authorized, patchBatchItemsStatus );
 
 	// frontend
 	r.add("get", "/", authorized, r.staticFileHandler({path:'@app/frontend/index.html'}));

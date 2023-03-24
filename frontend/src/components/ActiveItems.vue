@@ -51,4 +51,14 @@
 			></ActiveItem>
 		</div>
 	</div>
+	<Teleport to="#controls">
+		<div class=" py-4 px-4 h-full flex justify-end items-stretch">
+			<router-link
+				to="/?select-store"
+				class="px-3 border border-white flex items-center">
+				<img class=" h-5 w-5 invert" src="/static/icons8-fast-cart-24.png"/>
+				Go Shop!
+			</router-link>
+		</div>
+	</Teleport>
 </template>

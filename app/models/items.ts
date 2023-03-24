@@ -60,6 +60,15 @@ export function updateItemStatus(item_id:number, proxy_id:string, status: ItemSt
 	});
 }
 
+export function updateMultipleItemsStatus(item_ids:number[], proxy_id:string, status: ItemStatus) {
+	db.handle.transaction( () => {
+		item_ids.forEach( item_id => {
+			db.handle.query(updateItemStatusSQL, {item_id, status});
+			insertItemStatus(item_id, proxy_id, new Date, status);
+		});
+	});
+}
+
 const insertItemHistorySQL = `
 INSERT INTO items_history
 ("item_id", "proxy_id", "datetime", "name", "description", "image", "category_id", "check_stock", "deleted") VALUES

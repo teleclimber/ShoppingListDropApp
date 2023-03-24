@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import ActiveItemsPage from '../components/ActiveItemsPage.vue';
 import AddEditItem from '../components/AddEditItem.vue';
+import ShopModePage from '../components/ShopModePage.vue';
 
 const routes: Array<RouteRecordRaw> = [
 	{
 		path: '/',
-		name: 'Home',
+		name: 'home',
 		component: ActiveItemsPage
 	}, {
 		path: '/add',
@@ -18,10 +19,21 @@ const routes: Array<RouteRecordRaw> = [
 		component: AddEditItem,
 		props: route => {
 			const p = route.params.item_id;
-			if( Array.isArray(p) ) throw new Error("item_id can not be an array")
+			if( Array.isArray(p) ) throw new Error("item_id can not be an array");
 			return {
 				mode: "edit",
 				item_id: parseInt(route.params.item_id as string)
+			}
+		}
+	}, {
+		path: '/shop/:store_id',
+		name: 'shop',
+		component: ShopModePage,
+		props: route => {
+			const p = route.params.store_id;
+			if( Array.isArray(p) ) throw new Error("store_id can not be an array");
+			return {
+				store_id: parseInt(route.params.store_id as string)
 			}
 		}
 	}

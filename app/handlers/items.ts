@@ -1,6 +1,6 @@
 import type {Context} from "https://deno.land/x/dropserver_app@v0.2.1/mod.ts"
 
-import {getItemsPlus, createItem, updateItem, updateItemStatus}  from '../models/items.ts';
+import {getItemsPlus, createItem, updateItem, updateItemStatus, updateMultipleItemsStatus }  from '../models/items.ts';
 import type {Item, ItemData, ItemStatus} from '../app_types.ts';
 
 // Need:
@@ -91,10 +91,40 @@ export async function patchItemStatus(ctx:Context) {
 	}
 
 	const item_id = Number(params.id);
-	const cur_status = validateStatus(data.cur_status)
+	const cur_status = validateStatus(data.cur_status);
 
 	try {
-		await updateItemStatus( item_id, ctx.proxyId, cur_status );
+		updateItemStatus( item_id, ctx.proxyId, cur_status );
+	}
+	catch(e) {
+		ctx.respondStatus(500, e);
+		return;
+	}
+
+	ctx.respondStatus(200, "ok");
+}
+
+export async function patchBatchItemsStatus(ctx:Context) {
+	if( ctx.proxyId === null ) throw new Error("got a null proxy_id in postLeftoverItem");
+	
+	let data;
+	try {
+		data = await ctx.request.json();
+	}
+	catch(e) {
+		ctx.respondStatus(400, e);
+		return;
+	}
+
+	if( !Array.isArray(data.item_ids) ) {
+		ctx.respondStatus(400, "item_ids is not an array");
+		return;
+	}
+	const item_ids = data.item_ids.map( (i:number) => Number(i));
+	const cur_status = validateStatus(data.cur_status);
+
+	try {
+		updateMultipleItemsStatus( item_ids, ctx.proxyId, cur_status );
 	}
 	catch(e) {
 		ctx.respondStatus(500, e);

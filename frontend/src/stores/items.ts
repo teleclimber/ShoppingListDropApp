@@ -1,7 +1,7 @@
 import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { LoadState } from './common';
-import {ItemPlus, InsertItemPlus, ItemStatus, ItemData, ItemCurStatus, ItemStoreIds} from '../../../app/app_types';
+import {ItemPlus, InsertItemPlus, ItemStatus, ItemData, ItemCurStatus, StoreIds} from '../../../app/app_types';
 
 export const useItemsStore = defineStore('items', () => {
 	const load_state = ref(LoadState.NotLoaded);
@@ -63,7 +63,7 @@ export const useItemsStore = defineStore('items', () => {
 		items.value = new Map(items.value);
 		return item_id;
 	}
-	async function editItem(item_id: number, update_item: ItemData & ItemCurStatus & ItemStoreIds) {
+	async function editItem(item_id: number, update_item: ItemData & ItemCurStatus & StoreIds) {
 		const item = mustGetItem(item_id);
 		const resp = await fetch("/api/items/"+item_id, {
 			method: "PUT",
@@ -81,6 +81,7 @@ export const useItemsStore = defineStore('items', () => {
 	
 	async function setItemStatus(item_id: number, cur_status: ItemStatus) {
 		const item = mustGetItem(item_id);
+		item.value = Object.assign({}, item.value, {cur_status});
 		const resp = await fetch("/api/items/"+item_id, {
 			method: "PATCH",
 			headers: {
@@ -90,10 +91,25 @@ export const useItemsStore = defineStore('items', () => {
 			  body: JSON.stringify({cur_status})
 		});
 		if( !resp.ok ) throw new Error("did not get OK");
-		item.value = Object.assign({}, item.value, {cur_status});
 	}
 
-	return {loadData, is_loaded, items, ordered_items, addItem, editItem, setItemStatus, getItem, mustGetItem};
+	async function batchSetItemStatus(item_ids:number[], cur_status:ItemStatus) {
+		item_ids.forEach( i => {
+			const item = mustGetItem(i);
+			item.value = Object.assign({}, item.value, {cur_status});
+		});
+		const resp = await fetch("/api/items", {
+			method: "PATCH",
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			  },
+			  body: JSON.stringify({item_ids,cur_status})
+		});
+		if( !resp.ok ) throw new Error("did not get OK");
+	}
+
+	return {loadData, is_loaded, items, ordered_items, addItem, editItem, setItemStatus, batchSetItemStatus, getItem, mustGetItem};
 });
 
 function itemPlusFromRaw(data:any) :ItemPlus {

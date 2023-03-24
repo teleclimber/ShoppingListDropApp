@@ -1,20 +1,21 @@
 <script setup lang="ts">
-
+import HeaderTitle from './components/HeaderTitle.vue';
+import Controls from './components/Controls.vue';
+import SelectStoreOverlay from './components/SelectStoreOverlay.vue';
 
 </script>
 
 <template>
-	<div class="bg-gray-50">
+	<div class="bg-gray-50 min-h-screen pb-20 box-content">
 		<header class="sticky top-0 z-50 h-16 bg-green-600 text-white flex items-center justify-between">
-			<div class="pl-6">
-				<span class="text-2xl">
-					<router-link to="/">Shop List</router-link>
-				</span>
+			<div class="pl-6 text-2xl">
+				<HeaderTitle></HeaderTitle>
 			</div>
 			<div class="pr-6">
 				<!-- <CurrentUser></CurrentUser> -->
 			</div>
 		</header>
+		<Controls></Controls>
 		<main class="relative">
 			<!-- <UpdateApp></UpdateApp> -->
 
@@ -22,13 +23,13 @@
 				<router-view/>
 			</div>
 		</main>
-		<footer class="mt-72">
-			<a target="_blank" href="https://icons8.com/icon/LLwOlK0zMIxj/grocery-shelf">Grocery Shelf</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+		<div class="absolute w-full bottom-0 text-xs text-center">
 			<a target="_blank" href="https://icons8.com/icon/byZmliYnyFPz/fast-cart">Fast Cart</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-		</footer>
+		</div>
 		<!-- <RequestErrorOverlay></RequestErrorOverlay> -->
 		
 	</div>
+	<SelectStoreOverlay></SelectStoreOverlay>
 </template>
 
 

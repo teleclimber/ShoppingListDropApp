@@ -34,17 +34,22 @@ function setToStocked(item_id:number) {
 </script>
 <template>
 	<div class="p-2 border-b relative bg-white" @click="$emit('toggle-expand')">
-		<div class="grid grid-cols-4">
-			<h2 class="font-bold col-span-3 overflow-hidden overflow-ellipsis" :class="{'whitespace-nowrap': !expanded}">{{ item.value.name }}</h2>
-			<span v-if="buy" class="flex justify-center px-3 mb-1 text-sm font-bold bg-yellow-300 self-start justify-self-end">
+		<div class="grid grid-cols-2">
+			<h2 class="font-bold overflow-hidden overflow-ellipsis" :class="{'whitespace-nowrap': !expanded}">{{ item.value.name }}</h2>
+			<span v-if="item.value.cur_status === ItemStatus.buy" 
+				class="flex justify-center px-3 mb-1 text-sm font-bold bg-yellow-300 self-start justify-self-end items-center">
 				<img class=" h-4 w-4" src="/static/icons8-fast-cart-24.png"/>
 				BUY
+			</span>
+			<span v-else-if="item.value.cur_status === ItemStatus.inCart"
+				class="flex justify-center px-2 mb-1 text-xs font-bold rounded-full text-orange-50 bg-orange-400 self-start justify-self-end items-center">
+				IN CART
 			</span>
 			<span v-else>
 				&nbsp;
 			</span>
-			<p class="col-span-3 overflow-hidden overflow-ellipsis" :class="{'whitespace-nowrap': !expanded}">{{ item.value.description }}</p>
-			<div class="flex flex-nowrap" :class="{'justify-end': !expanded, 'col-span-4': expanded}">
+			<p class="overflow-hidden overflow-ellipsis" :class="{'whitespace-nowrap': !expanded}">{{ item.value.description }}</p>
+			<div class="flex flex-nowrap" :class="{'justify-end': !expanded, 'col-span-2': expanded}">
 				<StoreTag v-for="store_id in item.value.store_ids" :store_id="store_id" class="ml-1"></StoreTag>
 				<span v-if="item.value.store_ids.length === 0">&nbsp;</span>
 			</div>
@@ -54,18 +59,18 @@ function setToStocked(item_id:number) {
 			<button 
 				v-if="item.value.cur_status === 'stocked'"
 				@click.stop.prevent="setToBuy(item.value.item_id)"
-				class="rounded px-2 py-1 bg-blue-600 uppercase text-white text-sm font-bold">
+				class="px-3 uppercase text-sm border border-blue-600 text-blue-600  ">
 				Buy
 			</button>
 			<button 
-				v-if="item.value.cur_status === 'buy'"
+				v-if="item.value.cur_status === ItemStatus.buy"
 				@click.stop.prevent="setToStocked(item.value.item_id)"
-				class="px-2 py-1 bg-blue-600 uppercase  text-white rounded text-sm font-bold">
+				class="px-3 uppercase text-sm border border-blue-600 text-blue-600">
 				Stocked
 			</button>
 			<button
 				@click.stop.prevent="editClicked(item.value.item_id)"
-				class="ml-2 px-2 py-1 bg-blue-600 uppercase text-white rounded text-sm font-bold">Edit</button>
+				class="ml-2 px-3 uppercase text-sm border border-blue-600 text-blue-600">Edit</button>
 		</div>
 	</div>
 </template>
