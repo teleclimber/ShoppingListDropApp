@@ -1,3 +1,10 @@
+
+export interface User {
+	proxy_id: string,
+	display_name: string,
+	avatar: string
+}
+
 export enum ItemStatus {
 	stocked = "stocked",
 	buy = "buy",

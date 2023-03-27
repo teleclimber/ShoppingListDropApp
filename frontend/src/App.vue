@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import HeaderTitle from './components/HeaderTitle.vue';
+import CurrentUser from './components/CurrentUser.vue';
 import Controls from './components/Controls.vue';
 import SelectStoreOverlay from './components/SelectStoreOverlay.vue';
 
@@ -11,8 +12,8 @@ import SelectStoreOverlay from './components/SelectStoreOverlay.vue';
 			<div class="pl-2 md:pl-6 text-2xl">
 				<HeaderTitle></HeaderTitle>
 			</div>
-			<div class="pr-6">
-				<!-- <CurrentUser></CurrentUser> -->
+			<div class="pr-2 md:pr-6">
+				<CurrentUser></CurrentUser>
 			</div>
 		</header>
 		<Controls></Controls>

@@ -21,6 +21,12 @@ export default defineConfig({
 					});
 				}
 			},
+			'^\/avatars\/': {
+				target: 'http://localhost:3003',
+				changeOrigin: true,
+				cookieDomainRewrite: ".localhost",
+				secure: false,
+			}
 		}
 	},
 	plugins: [vue()]
