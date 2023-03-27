@@ -42,6 +42,12 @@
 	itemsStore.loadData();
 
 	const search = ref("");
+	function searchInput(e:Event) {
+		console.log(e);
+		// @ts-ignore
+		if( e.target ) e.target.composing = false;
+		//$event.target.composing = false
+	}
 	watch( search, (s) => {
 		show_popup.value = s !== "";
 		populateSuggestions(s);
@@ -98,9 +104,15 @@
 
 <template>
 	<div class="relative">
-		<div class="flex m-2">
+		<div class="flex ">
 			<!-- this should be a form... -->
-			<input id="title" type="text" v-model="search" ref="search_box_input" class="w-full px-2 shadow-sm border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+			<input 
+				id="title"
+				type="text"
+				v-model="search"
+				@input="searchInput"
+				ref="search_box_input"
+				class="w-full px-2 shadow-sm border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
 			<button @click.stop.prevent="quickAddClicked" class="ml-2 px-4 py-2 bg-blue-600 text-white uppercase rounded whitespace-nowrap">Quick Add</button>
 		</div>
 		<div v-if="show_popup" class="px-3 absolute z-30 w-full">

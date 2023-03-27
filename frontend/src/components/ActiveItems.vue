@@ -2,7 +2,7 @@
 	import { ShallowRef, Ref, ref, computed } from 'vue';
 	import { useItemsStore } from '../stores/items';
 	import { useCategoriesStore } from '../stores/categories';
-	import { ItemPlus } from '../../../app/app_types';
+	import { ItemPlus, ItemStatus } from '../../../app/app_types';
 
 	import ActiveItem from './ActiveItem.vue';
 
@@ -13,17 +13,21 @@
 
 	const categoriesStore = useCategoriesStore();
 
+	const filtered_items = computed( () => {
+		return itemsStore.ordered_items.filter( i => i.value.check_stock || i.value.cur_status === ItemStatus.buy );
+	});
+
 	const catItems = computed( () => {
 		const ret :{name: string, items: ShallowRef<ItemPlus>[] }[] = [];
 		categoriesStore.categories.forEach( c => {
 			ret.push({
 				name: c.name,
-				items: itemsStore.ordered_items.filter( i => i.value.category_id === c.category_id )
-			})
+				items: filtered_items.value.filter( i => i.value.category_id === c.category_id )
+			});
 		});
 		ret.push({
 			name: "[No Category]",
-			items: itemsStore.ordered_items.filter( i => i.value.category_id === -1 )
+			items: filtered_items.value.filter( i => i.value.category_id === -1 )
 		});
 		return ret;
 	});
@@ -51,8 +55,11 @@
 			></ActiveItem>
 		</div>
 	</div>
+	<div v-if="filtered_items.length === 0" class="flex h-96 justify-center items-center italic text-gray-500">
+		No active items.
+	</div>
 	<Teleport to="#controls">
-		<div class=" py-4 px-4 h-full flex justify-end items-stretch">
+		<div class=" py-4 h-full flex justify-end items-stretch">
 			<router-link
 				to="/?select-store"
 				class="px-3 border border-white flex items-center">

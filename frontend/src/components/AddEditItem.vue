@@ -22,7 +22,7 @@ const name = ref("");
 const description = ref("");
 const category_id = ref(-1);
 const store_ids :Ref<number[]> = ref([]);
-const check_stock = ref(false);
+const check_stock = ref(true);
 const cur_status :Ref<ItemStatus> = ref(ItemStatus.buy);
 
 function setInitialValues() {
@@ -41,7 +41,7 @@ function setInitialValues() {
 		description.value = "";
 		category_id.value = -1;
 		store_ids.value = [];
-		check_stock.value = false;
+		check_stock.value = true;
 		cur_status.value = ItemStatus.buy;
 	}
 }
@@ -90,12 +90,9 @@ async function submitClicked() {
 	}
 	else throw new Error("what is this mode?? "+props.mode);
 
-	// then go to... main page? Or could go "back".
 	router.back();
-	
 }
 function cancelClicked() {
-	// router back to home
 	router.back();
 }
 
@@ -106,7 +103,6 @@ function statusClass(s :ItemStatus) :string[] {
 	return ['text-blue-700', 'bg-blue-50', 'border-blue-400'];
 }
 </script>
-
 
 <template>
 	<div class="p-2">
@@ -125,7 +121,13 @@ function statusClass(s :ItemStatus) :string[] {
 					Notes:
 				</label>
 				<div class="mt-1">
-					<textarea v-model="description" id="description" name="description" rows="3" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md" placeholder="Was yummy! One portion left..." />
+					<textarea 
+						v-model="description"
+						id="description"
+						name="description"
+						rows="3"
+						class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+						placeholder="Quick Description of item..." />
 				</div>
 			</div>
 
@@ -154,7 +156,7 @@ function statusClass(s :ItemStatus) :string[] {
 				</div>
 			</div>
 
-			<div class="my-4 flex">
+			<div class="my-6 flex">
 				<input id="consumable" type="checkbox" v-model="check_stock" />
 				<label for="consumable" class="pl-1 font-medium text-gray-700">
 					Check stock on this item
@@ -179,11 +181,11 @@ function statusClass(s :ItemStatus) :string[] {
 				</label>
 			</div>
 
-			<div class="flex justify-between">
-				<input type="button" class="px-4 py-2 bg-blue-600 uppercase font-bold text-white rounded-lg" @click="cancelClicked" value="Cancel" />
+			<div class="mt-6 flex justify-between">
+				<input type="button" class="px-4 py-2 uppercase font-bold text-blue-600 border border-blue-600" @click="cancelClicked" value="Cancel" />
 				<input
 					type="submit"
-					class="px-4 py-2 bg-blue-600 uppercase font-bold text-white rounded-lg"
+					class="px-4 py-2 uppercase font-bold text-blue-600 border border-blue-600"
 					value="Save" />
 			</div>
 		</form>

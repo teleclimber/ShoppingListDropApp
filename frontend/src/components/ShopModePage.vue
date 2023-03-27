@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import { ShallowRef, computed } from 'vue';
+import { useRouter } from 'vue-router';
+
 import { useItemsStore } from '../stores/items';
 import { useCategoriesStore } from '../stores/categories';
 import { ItemPlus, ItemStatus } from '../../../app/app_types';
 
 import ShopListItem from '../components/ShopListItem.vue';
-import router from '../router';
 
 const props = defineProps<{
 	store_id: number
 }>();
+
+const router = useRouter();
 
 const itemsStore = useItemsStore();
 itemsStore.loadData();
@@ -58,13 +61,13 @@ async function finishClicked() {
 
 <template>
 	<div v-for="cItems in catItems">
-		<h2 v-if="cItems.items.length !== 0" class="pl-2 mt-6 text-2xl font-medium text-center">{{ cItems.name }}</h2>
+		<h2 v-if="cItems.items.length !== 0" class="pl-2 mt-6 mb-1 text-2xl font-medium text-center">{{ cItems.name }}</h2>
 		<ShopListItem 
 			v-for="item in cItems.items"
 			:item="item"
 		></ShopListItem>
 	</div>
-	<div v-if="items.length === 0" class="h-96 flex justify-center items-center">
+	<div v-if="items.length === 0" class="h-96 flex justify-center items-center italic text-gray-500">
 		No items to buy at this store.
 	</div>
 

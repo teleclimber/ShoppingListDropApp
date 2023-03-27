@@ -8,7 +8,7 @@
 
 
 <template>
-	<QuickAdd></QuickAdd>
+	<QuickAdd class="mt-2 mx-2 md:mx-0"></QuickAdd>
 	<ActiveItems></ActiveItems>
 
 </template>
