@@ -1,13 +1,5 @@
 import {db} from '../db.ts';
-
-export interface StoreData {
-	[key: string]: string|number|boolean|Date|null;
-	name: string
-}
-
-export interface Store extends StoreData {
-	store_id: number,
-}
+import type { Store, StoreData } from '../app_types.ts';
 
 const insertStoreSQL = `
 INSERT INTO stores 
@@ -34,4 +26,9 @@ export function getStore(store_id: number) : Store {
 	const rows = db.handle.queryEntries<Store>('SELECT * FROM stores WHERE store_id = :store_id', {store_id});
 	if( rows.length !== 1 ) throw new Error("store not found: "+store_id);
 	return rows[0];
+}
+
+export function getStores() :Store[] {
+	const rows = db.handle.queryEntries<Store>('SELECT * FROM stores');
+	return rows;
 }

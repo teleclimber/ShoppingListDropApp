@@ -8,7 +8,8 @@ const props = defineProps<{
 const {getStore} = useStoresStore();
 
 const store = computed( () => {
-	return getStore( props.store_id );
+	const s = getStore( props.store_id );
+	if( s ) return s.value;
 });
 
 const storeName = computed( () => {

@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import AllStoresPage from '../components/AllStoresPage.vue';
+import AddEditStore from '../components/AddEditStore.vue';
 import ActiveItemsPage from '../components/ActiveItemsPage.vue';
 import AddEditItem from '../components/AddEditItem.vue';
 import ShopModePage from '../components/ShopModePage.vue';
@@ -8,6 +10,26 @@ const routes: Array<RouteRecordRaw> = [
 		path: '/',
 		name: 'home',
 		component: ActiveItemsPage
+	}, {
+		path: '/stores',
+		name: 'stores',
+		component: AllStoresPage
+	}, {
+		path: '/add-store',
+		name: 'add-store',
+		component: AddEditStore
+	}, {
+		path: '/edit-store/:store_id',
+		name: 'edit-store',
+		component: AddEditStore,
+		props: route => {
+			let store_id :number|undefined;
+			const qs = Number(route.params['store_id']);
+			if( !isNaN(qs)  ) store_id = qs;
+			return {
+				store_id
+			}
+		}
 	}, {
 		path: '/add',
 		name: 'add-item',

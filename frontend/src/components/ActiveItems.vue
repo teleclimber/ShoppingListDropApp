@@ -55,7 +55,7 @@
 			></ActiveItem>
 		</div>
 	</div>
-	<div v-if="filtered_items.length === 0" class="flex h-96 justify-center items-center italic text-gray-500">
+	<div v-if="filtered_items.length === 0" class="flex h-48 justify-center items-end italic text-gray-500">
 		No active items.
 	</div>
 	<Teleport to="#controls">

@@ -24,9 +24,6 @@ import SelectStoreOverlay from './components/SelectStoreOverlay.vue';
 				<router-view/>
 			</div>
 		</main>
-		<div class="absolute w-full bottom-0 text-xs text-center">
-			<a target="_blank" href="https://icons8.com/icon/byZmliYnyFPz/fast-cart">Fast Cart</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-		</div>
 		<!-- <RequestErrorOverlay></RequestErrorOverlay> -->
 		
 	</div>

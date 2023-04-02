@@ -151,7 +151,7 @@ function statusClass(s :ItemStatus) :string[] {
 				</label>
 				<div class="mt-1">
 					<select id="stores" multiple v-model="store_ids">
-						<option v-for="store in storesStore.stores" :value="store.store_id">{{ store.name }}</option>
+						<option v-for="store in storesStore.sorted_stores" :value="store.value.store_id">{{ store.value.name }}</option>
 					</select>
 				</div>
 			</div>

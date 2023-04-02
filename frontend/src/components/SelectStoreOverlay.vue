@@ -11,7 +11,7 @@ const show = computed( () => {
 });
 
 const storesStore = useStoresStore();
-//storesStore.loadData();
+storesStore.loadData();
 
 </script>
 
@@ -20,8 +20,8 @@ const storesStore = useStoresStore();
 		<div class="bg-white shadow-lg">
 			<h4 class="py-2 px-4 font-medium">Pick store:</h4>
 			<ul>
-				<li v-for="s in storesStore.stores" :key="s.store_id">
-					<router-link :to="{name: 'shop', params:{store_id:s.store_id}}" replace class="block py-2 px-4 border-t">{{ s.name }}</router-link>
+				<li v-for="s in storesStore.sorted_stores" :key="s.value.store_id">
+					<router-link :to="{name: 'shop', params:{store_id:s.value.store_id}}" replace class="block py-2 px-4 border-t">{{ s.value.name }}</router-link>
 				</li>
 			</ul>
 		</div>
