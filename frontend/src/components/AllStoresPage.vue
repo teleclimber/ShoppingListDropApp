@@ -14,8 +14,10 @@ storesStore.loadData();
 			class="px-3 uppercase text-sm border border-blue-600 text-blue-600">
 			edit</router-link>
 	</div>
-	<div v-if="!storesStore.is_loaded">Loading...</div>
-	<div v-else-if="storesStore.stores.size === 0">No stores.</div>
+	<div class="pt-48 italic text-center text-gray-500">
+		<span v-if="!storesStore.is_loaded">Loading...</span>
+		<span v-else-if="storesStore.stores.size === 0" >No stores.</span>
+	</div>
 
 	<router-link to="add-store" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full fixed bottom-6 right-6">
 		<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

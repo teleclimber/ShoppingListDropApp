@@ -12,6 +12,7 @@
 	itemsStore.loadData();
 
 	const categoriesStore = useCategoriesStore();
+	categoriesStore.loadData();
 
 	const filtered_items = computed( () => {
 		return itemsStore.ordered_items.filter( i => i.value.check_stock || i.value.cur_status === ItemStatus.buy );
@@ -19,10 +20,10 @@
 
 	const catItems = computed( () => {
 		const ret :{name: string, items: ShallowRef<ItemPlus>[] }[] = [];
-		categoriesStore.categories.forEach( c => {
+		categoriesStore.sorted_categories.forEach( c => {
 			ret.push({
-				name: c.name,
-				items: filtered_items.value.filter( i => i.value.category_id === c.category_id )
+				name: c.value.name,
+				items: filtered_items.value.filter( i => i.value.category_id === c.value.category_id )
 			});
 		});
 		ret.push({

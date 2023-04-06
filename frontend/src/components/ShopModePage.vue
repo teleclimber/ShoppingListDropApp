@@ -18,6 +18,7 @@ const itemsStore = useItemsStore();
 itemsStore.loadData();
 
 const categoriesStore = useCategoriesStore();
+categoriesStore.loadData();
 
 const items = computed( () => {
 	const s = props.store_id;
@@ -29,10 +30,10 @@ const items = computed( () => {
 
 const catItems = computed( () => {
 	const ret :{name: string, items: ShallowRef<ItemPlus>[] }[] = [];
-	categoriesStore.categories.forEach( c => {
+	categoriesStore.sorted_categories.forEach( c => {
 		ret.push({
-			name: c.name,
-			items: items.value.filter( i => i.value.category_id === c.category_id )
+			name: c.value.name,
+			items: items.value.filter( i => i.value.category_id === c.value.category_id )
 		})
 	});
 	ret.push({

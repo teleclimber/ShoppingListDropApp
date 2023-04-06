@@ -41,7 +41,7 @@ export async function postStore(ctx:Context) {
 }
 
 export async function putStore(ctx:Context) {
-	if( ctx.proxyId === null ) throw new Error("got a null proxy_id in postLeftoverItem");
+	if( ctx.proxyId === null ) throw new Error("got a null proxy_id in putStore");
 	const params = <{id:string}>ctx.params;
 
 	let data;

@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import AllStoresPage from '../components/AllStoresPage.vue';
 import AddEditStore from '../components/AddEditStore.vue';
+import CategoriesPage from '../components/CategoriesPage.vue';
+import CategoryAddEdit from '../components/CategoryAddEdit.vue';
 import ActiveItemsPage from '../components/ActiveItemsPage.vue';
 import AddEditItem from '../components/AddEditItem.vue';
 import ShopModePage from '../components/ShopModePage.vue';
@@ -28,6 +30,26 @@ const routes: Array<RouteRecordRaw> = [
 			if( !isNaN(qs)  ) store_id = qs;
 			return {
 				store_id
+			}
+		}
+	}, {
+		path: '/categories',
+		name: 'categories',
+		component: CategoriesPage
+	}, {
+		path: '/add-category',
+		name: 'add-category',
+		component: CategoryAddEdit
+	}, {
+		path: '/edit-category/:category_id',
+		name: 'edit-category',
+		component: CategoryAddEdit,
+		props: route => {
+			let category_id :number|undefined;
+			const qs = Number(route.params['category_id']);
+			if( !isNaN(qs)  ) category_id = qs;
+			return {
+				category_id
 			}
 		}
 	}, {

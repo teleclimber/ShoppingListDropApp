@@ -70,7 +70,8 @@ export function upTo1(db :DB) {
 
 	db.query(`CREATE TABLE "categories" (
 		"category_id" INTEGER PRIMARY KEY ASC,
-		"name" TEXT
+		"name" TEXT,
+		"sort_order" INTEGER NOT NULL DEFAULT 9999
 	)`);
 
 	db.query(`CREATE TABLE "stores" (

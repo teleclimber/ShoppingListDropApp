@@ -2,7 +2,8 @@ import { DB } from "https://deno.land/x/sqlite@v3.7.0/mod.ts";
 import { assertEquals } from "https://deno.land/std@0.172.0/testing/asserts.ts";
 import '../../ds_test/index.ts';
 import {db} from '../db.ts';
-import {CategoryData, createCategory, getCategory} from './categories.ts';
+import {createCategory, getCategory} from './categories.ts';
+import type { Category, CategoryData } from '../app_types.ts';
 import {upTo1} from '../migrations.ts';
 
 
@@ -15,7 +16,8 @@ Deno.test({
 		db.setHandle(handle);
 
 		const category_data:CategoryData = {
-			name: "cat1"
+			name: "cat1",
+			sort_order: 77
 		};
 		const category_id = createCategory(category_data);
 

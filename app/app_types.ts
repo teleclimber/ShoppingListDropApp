@@ -72,3 +72,16 @@ type StoreStoreID = {
 }
 
 export type Store = StoreData & StoreStoreID;
+
+// Categories
+
+export type CategoryData = {
+	name: string,
+	sort_order: number
+}
+
+export type CategoryCategoryID = {
+	category_id: number
+}
+
+export type Category = CategoryData & CategoryCategoryID;

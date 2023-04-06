@@ -2,6 +2,7 @@ import { RoutesBuilder, AuthAllow } from 'https://deno.land/x/dropserver_app@v0.
 import { getCurrentUser } from './handlers/users.ts';
 import { getAllItems, postItem, putItem, patchItemStatus, patchBatchItemsStatus } from './handlers/items.ts';
 import { getAllStores, postStore, putStore } from './handlers/stores.ts';
+import { getAllCategories, postCategory, putCategory } from './handlers/categories.ts';
 
 export default function createRoutes() {
 	const r = new RoutesBuilder;
@@ -19,6 +20,10 @@ export default function createRoutes() {
 	r.add('get', '/api/stores', authorized, getAllStores );
 	r.add('post', '/api/stores', authorized, postStore );
 	r.add('put', '/api/stores/:id', authorized, putStore );
+
+	r.add('get', '/api/categories', authorized, getAllCategories );
+	r.add('post', '/api/categories', authorized, postCategory );
+	r.add('put', '/api/categories/:id', authorized, putCategory );
 
 	// avatars: 
 	r.add("get", {path:"/avatars", end: false}, authorized, r.staticFileHandler({path:'@avatars/'}));

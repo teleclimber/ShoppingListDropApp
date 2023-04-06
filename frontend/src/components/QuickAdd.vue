@@ -43,7 +43,7 @@
 
 	const search = ref("");
 	function searchInput(e:Event) {
-		console.log(e);
+		//console.log(e);
 		// @ts-ignore
 		if( e.target ) e.target.composing = false;
 		//$event.target.composing = false

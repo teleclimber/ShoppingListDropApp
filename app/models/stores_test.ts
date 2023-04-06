@@ -2,7 +2,8 @@ import { DB } from "https://deno.land/x/sqlite@v3.7.0/mod.ts";
 import { assertEquals } from "https://deno.land/std@0.172.0/testing/asserts.ts";
 import '../../ds_test/index.ts';
 import {db} from '../db.ts';
-import {StoreData, createStore, getStore} from './stores.ts';
+import {createStore, getStore} from './stores.ts';
+import type { StoreData } from '../app_types.ts';
 import {upTo1} from '../migrations.ts';
 
 

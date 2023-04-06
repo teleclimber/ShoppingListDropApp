@@ -1,18 +1,10 @@
 import {db} from '../db.ts';
-
-export interface CategoryData {
-	[key: string]: string|number|boolean|Date|null;
-	name: string
-}
-
-export interface Category extends CategoryData {
-	category_id: number,
-}
+import type { Category, CategoryData } from '../app_types.ts';
 
 const insertCategorySQL = `
 INSERT INTO categories 
-("name") VALUES
-(:name)
+("name", "sort_order") VALUES
+(:name, :sort_order)
 `;
 export function createCategory(data: CategoryData) :number {
 	db.handle.query(insertCategorySQL, data);
@@ -21,7 +13,7 @@ export function createCategory(data: CategoryData) :number {
 
 const updateCategorySQL = `
 UPDATE categories SET
-name=:name
+name=:name, sort_order=:sort_order
 WHERE category_id=:category_id
 `;
 export function editCategory(category_id: number, data:CategoryData) {
@@ -30,8 +22,14 @@ export function editCategory(category_id: number, data:CategoryData) {
 
 //delete
 
+// unnecessary?
 export function getCategory(category_id: number) : Category {
 	const rows = db.handle.queryEntries<Category>('SELECT * FROM categories WHERE category_id = :category_id', {category_id});
 	if( rows.length !== 1 ) throw new Error("category not found: "+category_id);
 	return rows[0];
+}
+
+export function getCategories() :Category[] {
+	const rows = db.handle.queryEntries<Category>('SELECT * FROM categories');
+	return rows;
 }

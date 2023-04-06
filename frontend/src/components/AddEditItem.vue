@@ -15,8 +15,12 @@ const props = defineProps<{
 }>();
 
 const itemsStore = useItemsStore();
+
 const categoriesStore = useCategoriesStore();
+categoriesStore.loadData();
+
 const storesStore = useStoresStore();
+storesStore.loadData();
 
 const name = ref("");
 const description = ref("");
@@ -140,7 +144,7 @@ function statusClass(s :ItemStatus) :string[] {
 				<div class="mt-1">
 					<select id="category" v-model="category_id">
 						<option :value="-1">None</option>
-						<option v-for="cat in categoriesStore.categories" :value="cat.category_id">{{ cat.name }}</option>
+						<option v-for="cat in categoriesStore.sorted_categories" :value="cat.value.category_id">{{ cat.value.name }}</option>
 					</select>
 				</div>
 			</div>
