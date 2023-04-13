@@ -1,12 +1,12 @@
 import type {Context} from "https://deno.land/x/dropserver_app@v0.2.1/mod.ts";
 
-import { getCategories, editCategory, createCategory } from "../models/categories.ts";
+import { getCategories, editCategory, createCategory, editCategoriesOrder } from "../models/categories.ts";
 import type { Category, CategoryData } from '../app_types.ts';
 
 export async function getAllCategories(ctx:Context) {
 	let categories:Category[];
 	try {
-		categories = await getCategories();
+		categories = getCategories();
 	} catch(e) {
 		ctx.respondWith(new Response(e, {status:500}));
 		return;
@@ -30,7 +30,7 @@ export async function postCategory(ctx:Context) {
 
 	let new_id;
 	try {
-		new_id = await createCategory( category_data );
+		new_id = createCategory( category_data );
 	}
 	catch(e) {
 		ctx.respondStatus(500, e);
@@ -57,7 +57,46 @@ export async function putCategory(ctx:Context) {
 	const category_data = validateCategoryData(data);
 
 	try {
-		await editCategory( category_id, category_data );
+		editCategory( category_id, category_data );
+	}
+	catch(e) {
+		ctx.respondStatus(500, e);
+		return;
+	}
+
+	ctx.respondStatus(200, "ok");
+}
+
+// patchCategories updates the sort order of categories
+export async function patchCategories(ctx:Context) {
+	if( ctx.proxyId === null ) throw new Error("got a null proxy_id in patchCategory");
+
+	let data;
+	try {
+		data = await ctx.request.json();
+	}
+	catch(e) {
+		ctx.respondStatus(400, e);
+		return;
+	}
+
+	if( !Array.isArray(data) ) {
+		ctx.respondStatus(400, "expected array payload");
+		return;
+	}
+	let bad = false;
+	const sorted = data.map( d => {
+		const n = Number(d);
+		if( isNaN(n) ) bad = true;
+		return n;
+	});
+	if( bad ) {
+		ctx.respondStatus(400, "expected array payload");
+		return;
+	}
+
+	try {
+		editCategoriesOrder(sorted);
 	}
 	catch(e) {
 		ctx.respondStatus(500, e);

@@ -49,6 +49,8 @@ export const useCategoriesStore = defineStore('categories', () => {
 	}
 
 	async function addCategory(category_data:CategoryData) :Promise<number> {
+		// For now set the sort order to be the last item (assumes existing items are sort_order are correct)
+		category_data.sort_order = categories.value.size;
 		const resp = await fetch("/api/categories", {
 			method: "POST",
 			headers: {
@@ -81,6 +83,25 @@ export const useCategoriesStore = defineStore('categories', () => {
 		categories.value = new Map(categories.value);
 	}
 
+	async function setCategoryOrder( ordered: number[] ) {
+		console.log("ordered", ordered);
+		ordered.forEach( (o, i) => {
+			const c = mustGetCategory(o);
+			c.value = Object.assign({}, c.value, {sort_order: i});
+		});
+		categories.value = new Map(categories.value);
+
+		const resp = await fetch("/api/categories/", {
+			method: "PATCH",
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			  },
+			  body: JSON.stringify(ordered)
+		});
+		if( !resp.ok ) throw new Error("did not get OK");
+	}
+
 	function getCategory(category_id:number) :ShallowRef<Category>|undefined {
 		return categories.value.get(category_id);
 	}
@@ -90,5 +111,5 @@ export const useCategoriesStore = defineStore('categories', () => {
 		return s;
 	}
 
-	return { loadData, is_loaded, categories, sorted_categories, addCategory, editCategory, getCategory, mustGetCategory };
+	return { loadData, is_loaded, categories, sorted_categories, addCategory, editCategory, getCategory, mustGetCategory, setCategoryOrder };
 });

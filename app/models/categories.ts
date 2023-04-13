@@ -20,6 +20,20 @@ export function editCategory(category_id: number, data:CategoryData) {
 	db.handle.query(updateCategorySQL, Object.assign({category_id}, data));
 }
 
+const updateCategorySortSQL = `
+UPDATE categories SET
+sort_order=:sort_order
+WHERE category_id=:category_id
+`;
+export function editCategoriesOrder(sorted:number[]) {
+	db.handle.transaction( () => {
+		sorted.forEach( (category_id, sort_order) => {
+			db.handle.query(updateCategorySortSQL, {category_id, sort_order});
+		});
+	});
+}
+
+
 //delete
 
 // unnecessary?
