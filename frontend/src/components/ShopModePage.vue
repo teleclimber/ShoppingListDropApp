@@ -24,7 +24,7 @@ const items = computed( () => {
 	const s = props.store_id;
 	return itemsStore.ordered_items.filter( (i) => {
 		if( i.value.cur_status !== ItemStatus.buy && i.value.cur_status !== ItemStatus.inCart ) return false;
-		return i.value.store_ids.includes(s);
+		return i.value.store_ids.includes(s) || i.value.category_id === -1;
 	});
 });
 
@@ -37,7 +37,7 @@ const catItems = computed( () => {
 		})
 	});
 	ret.push({
-		name: "[No Category]",
+		name: "",
 		items: items.value.filter( i => i.value.category_id === -1 )
 	});
 	return ret;
@@ -62,7 +62,10 @@ async function finishClicked() {
 
 <template>
 	<div v-for="cItems in catItems">
-		<h2 v-if="cItems.items.length !== 0" class="pl-2 mt-6 mb-1 text-2xl font-medium text-center">{{ cItems.name }}</h2>
+		<h2 v-if="cItems.items.length !== 0" class="pl-2 mt-6 mb-1 text-2xl text-center"
+		:class="[cItems.name ? ['font-medium'] : ['italic', 'text-gray-400']]">
+			{{ cItems.name || '(No category)' }}
+		</h2>
 		<ShopListItem 
 			v-for="item in cItems.items"
 			:item="item"

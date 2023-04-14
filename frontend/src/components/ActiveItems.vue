@@ -27,7 +27,7 @@
 			});
 		});
 		ret.push({
-			name: "[No Category]",
+			name: "",
 			items: filtered_items.value.filter( i => i.value.category_id === -1 )
 		});
 		return ret;
@@ -46,7 +46,10 @@
 
 <template>
 	<div v-for="cItems in catItems">
-		<h2 v-if="cItems.items.length !== 0" class="pl-2 mt-6 text-2xl font-medium text-center">{{ cItems.name }}</h2>
+		<h2 v-if="cItems.items.length !== 0" class="pl-2 mt-6 text-2xl text-center"
+			:class="[cItems.name ? ['font-medium'] : ['italic', 'text-gray-400']]">
+			{{ cItems.name || '(No category)' }}
+		</h2>
 		<div class="">
 			<ActiveItem 
 				v-for="item in cItems.items"

@@ -85,7 +85,14 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
 	history: createWebHistory(),
-	routes
+	routes,
+	scrollBehavior(to, from, savedPosition) {
+		if( to.name === 'home' || to.name === 'shop' ) {
+			if( savedPosition ) return savedPosition;
+			return;
+		}
+		return {top:0, left:0 };
+	}
 });
 
 export default router

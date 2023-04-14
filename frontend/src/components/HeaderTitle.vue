@@ -35,6 +35,8 @@ const shop_store = computed( () => {
 		<span v-else-if="route.name === 'stores'">Stores</span>
 		<span v-else-if="route.name === 'add-store'">Add Store</span>
 		<span v-else-if="route.name === 'edit-store'">Edit Store</span>
+		<span v-else-if="route.name === 'add-category'">Add Category</span>
+		<span v-else-if="route.name === 'edit-category'">Edit Category</span>
 		<span v-else>{{  route.name }}</span>
 	</div>
 </template>

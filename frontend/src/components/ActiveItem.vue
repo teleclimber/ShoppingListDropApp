@@ -48,7 +48,9 @@ function setToStocked(item_id:number) {
 			<span v-else>
 				&nbsp;
 			</span>
-			<p class="overflow-hidden overflow-ellipsis" :class="{'whitespace-nowrap': !expanded}">{{ item.value.description }}</p>
+			<p class="overflow-hidden overflow-ellipsis" :class="{'whitespace-nowrap': !expanded, 'col-span-2': expanded}">
+				{{ item.value.description }}
+			</p>
 			<div class="flex flex-nowrap" :class="{'justify-end': !expanded, 'col-span-2': expanded}">
 				<StoreTag v-for="store_id in item.value.store_ids" :store_id="store_id" class="ml-1"></StoreTag>
 				<span v-if="item.value.store_ids.length === 0">&nbsp;</span>
