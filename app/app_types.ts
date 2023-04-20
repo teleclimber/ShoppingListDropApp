@@ -65,6 +65,7 @@ export type ItemStatusData = {
 
 export type StoreData = {
 	name: string
+	categories: number[]
 }
 
 type StoreStoreID = {

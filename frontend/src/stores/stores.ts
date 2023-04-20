@@ -6,7 +6,8 @@ import { Store, StoreData } from '../../../app/app_types';
 function storeFromRaw(raw:any) {
 	return {
 		store_id: Number(raw.store_id),
-		name: raw.name + ''
+		name: raw.name + '',
+		categories: raw.categories.map( (c:any) => Number(c) )
 	};
 }
 

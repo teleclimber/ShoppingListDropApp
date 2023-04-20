@@ -68,8 +68,14 @@ export async function putStore(ctx:Context) {
 }
 
 function validateStoreData(data:any) :StoreData {
+	if( !Array.isArray(data.categories) ) throw new Error("store categories: expected array");
 	return {
 		name: validateName(data.name),
+		categories: data.categories.map( (c:any) => {
+			const cat_id = Number(c);
+			if( isNaN(cat_id) ) throw new Error("store category: expected a number");
+			return c;
+		})
 	};
 }
 

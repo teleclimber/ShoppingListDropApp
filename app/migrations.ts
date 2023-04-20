@@ -8,7 +8,6 @@ export default function createMigrations() {
 	const m = new MigrationsBuilder;
 
 	m.upTo(1, async () => {
-		console.log("creating db");
 		const dbH = db.getCreateDB();
 		upTo1(dbH);
 		dbH.close();
@@ -26,6 +25,18 @@ export default function createMigrations() {
 		await Deno.remove(filename);
 
 		await Deno.remove(app.appspacePath('images'), {recursive:true});
+	});
+
+	m.upTo(2, async () => {
+		const dbH = db.getCreateDB();
+		upTo2(dbH);
+		dbH.close();
+	});
+
+	m.downFrom(2, async() => {
+		const dbH = db.getCreateDB();
+		downFrom2(dbH);
+		dbH.close();
 	});
 
 	return m.migrations;
@@ -96,4 +107,19 @@ export function upTo1(db :DB) {
 		"proxy_id" TEXT,
 		"datetime" DATETIME
 	)`);
+}
+
+export function upTo2(db :DB) {
+	db.query(`CREATE TABLE "store_categories" (
+		"store_id" INTEGER,
+		"category_id" INTEGER
+	)`);
+
+	// TODO also need to add column to item_store to allow positive / negative 
+
+	// TODO should we also drop the tables we eagerly created in 1 shop_list and shop_list_items?
+}
+
+export function downFrom2(db :DB) {
+	db.query(`DROP TABLE store_categories`);
 }

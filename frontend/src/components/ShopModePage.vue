@@ -7,6 +7,7 @@ import { useCategoriesStore } from '../stores/categories';
 import { ItemPlus, ItemStatus } from '../../../app/app_types';
 
 import ShopListItem from '../components/ShopListItem.vue';
+import { useStoresStore } from '../stores/stores';
 
 const props = defineProps<{
 	store_id: number
@@ -20,11 +21,18 @@ itemsStore.loadData();
 const categoriesStore = useCategoriesStore();
 categoriesStore.loadData();
 
+const storesStore = useStoresStore();
+storesStore.loadData();
+
 const items = computed( () => {
 	const s = props.store_id;
+	const store = storesStore.getStore(s);
 	return itemsStore.ordered_items.filter( (i) => {
 		if( i.value.cur_status !== ItemStatus.buy && i.value.cur_status !== ItemStatus.inCart ) return false;
-		return i.value.store_ids.includes(s) || i.value.category_id === -1;
+		if( i.value.store_ids.includes(s) ) return true;	// adapt for when we have negative stores.
+		if( i.value.category_id === -1 ) return true;	// no category => always include
+		if( store !== undefined && store.value.categories.includes(i.value.category_id) ) return true;
+		return false;
 	});
 });
 

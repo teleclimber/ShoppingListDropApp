@@ -3,6 +3,7 @@ import { Ref, ref, onMounted, computed, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useStoresStore } from '../stores/stores';
+import { useCategoriesStore } from '../stores/categories';
 
 const props = defineProps<{
 	store_id?: number
@@ -11,10 +12,15 @@ const props = defineProps<{
 const router = useRouter();
 
 const storesStore = useStoresStore();
-storesStore.loadData();//? Why?
+storesStore.loadData();
+
+const categoriesStore = useCategoriesStore();
+categoriesStore.loadData();
 
 const name_input :Ref<HTMLInputElement|undefined> = ref();
 const name = ref("");
+
+const checked_cats :Ref<number[]> = ref([]);
 
 onMounted( () => {
 	if( name_input.value ) name_input.value.focus();
@@ -25,6 +31,7 @@ watchEffect( () => {
 	if( !storesStore.is_loaded ) return;
 	const store = storesStore.mustGetStore(props.store_id);
 	name.value = store.value.name;
+	checked_cats.value = Array.from(store.value.categories);
 });
 
 const valid = computed( () => {
@@ -36,11 +43,18 @@ const valid = computed( () => {
 async function submitClicked() {
 	if( !valid.value ) return;
 
+	const store_data = {
+		name:name.value,
+		categories: Array.from(checked_cats.value)
+	};
+
+	console.log(store_data)
+
 	if( props.store_id === undefined ) {
-		await storesStore.addStore({name:name.value});
+		await storesStore.addStore(store_data);
 	}
 	else {
-		await storesStore.editStore( props.store_id, {name:name.value});
+		await storesStore.editStore(props.store_id, store_data);
 	}
 
 	router.back();
@@ -62,6 +76,14 @@ function cancel() {
 				<div class="mt-1">
 					<input id="name" type="text" v-model="name" ref="name_input" class="w-full shadow-sm border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
 				</div>
+			</div>
+			<div class="my-4">
+				<h4 class="block mb-1 text-sm font-medium text-gray-700">Categories:</h4>
+				<label v-for="cat in categoriesStore.sorted_categories"
+					class="block border-b py-2 px-2 bg-white">
+					<input type="checkbox" :value="cat.value.category_id" v-model="checked_cats">
+					<span class="pl-2 font-medium">{{ cat.value.name }}</span>
+				</label>
 			</div>
 			<div class="mt-6 flex justify-between">
 				<input type="button" class="px-4 py-2 uppercase font-bold text-blue-600 border border-blue-600" @click="cancel" value="Cancel" />
