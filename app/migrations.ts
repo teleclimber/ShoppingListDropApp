@@ -115,7 +115,11 @@ export function upTo2(db :DB) {
 		"category_id" INTEGER
 	)`);
 
-	// TODO also need to add column to item_store to allow positive / negative 
+	db.query(`ALTER TABLE "item_store"
+		ADD COLUMN "there" BOOLEAN
+	`);
+
+	db.query(`UPDATE item_store SET there = true`);
 
 	// TODO should we also drop the tables we eagerly created in 1 shop_list and shop_list_items?
 }

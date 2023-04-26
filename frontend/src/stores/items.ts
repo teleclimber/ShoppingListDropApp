@@ -1,7 +1,7 @@
 import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { LoadState } from './common';
-import {ItemPlus, InsertItemPlus, ItemStatus, ItemData, ItemCurStatus, StoreIds} from '../../../app/app_types';
+import {ItemPlus, InsertItemPlus, ItemStatus, ItemData, ItemCurStatus, ItemStores} from '../../../app/app_types';
 
 export const useItemsStore = defineStore('items', () => {
 	const load_state = ref(LoadState.NotLoaded);
@@ -63,7 +63,7 @@ export const useItemsStore = defineStore('items', () => {
 		items.value = new Map(items.value);
 		return item_id;
 	}
-	async function editItem(item_id: number, update_item: ItemData & ItemCurStatus & StoreIds) {
+	async function editItem(item_id: number, update_item: ItemData & ItemCurStatus & ItemStores) {
 		const item = mustGetItem(item_id);
 		const resp = await fetch("/api/items/"+item_id, {
 			method: "PUT",
@@ -122,6 +122,11 @@ function itemPlusFromRaw(data:any) :ItemPlus {
 		category_id: Number(data.category_id),
 		check_stock: !!data.check_stock,
 		deleted: data.deleted ? new Date(data.Deleted) : null,
-		store_ids: Array.isArray(data.store_ids) ? data.store_ids.map( (s:any) => Number(s) ) : []
+		stores: Array.isArray(data.stores) ? data.stores.map( (s:any) => {
+			return {
+				store_id:Number(s.store_id),
+				there:!!s.there
+			};
+		}) : [] 
 	}
 }

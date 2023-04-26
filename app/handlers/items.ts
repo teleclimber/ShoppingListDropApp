@@ -34,11 +34,11 @@ export async function postItem(ctx:Context) {
 
 	const item_data = validateItemData(data);
 	const cur_status = validateStatus(data.cur_status)
-	const store_ids = validateStoreIds(data.store_ids);
+	const stores = validateStores(data.stores);
 
 	let new_id;
 	try {
-		new_id = await createItem( ctx.proxyId, item_data, cur_status, store_ids );
+		new_id = await createItem( ctx.proxyId, item_data, cur_status, stores );
 	}
 	catch(e) {
 		ctx.respondStatus(500, e);
@@ -64,10 +64,10 @@ export async function putItem(ctx:Context) {
 	const item_id = Number(params.id);
 	const item_data = validateItemData(data);
 	const cur_status = validateStatus(data.cur_status)
-	const store_ids = validateStoreIds(data.store_ids);
+	const stores = validateStores(data.stores);
 
 	try {
-		await updateItem( item_id, ctx.proxyId, item_data, cur_status, store_ids );
+		await updateItem( item_id, ctx.proxyId, item_data, cur_status, stores );
 	}
 	catch(e) {
 		ctx.respondStatus(500, e);
@@ -200,11 +200,15 @@ function validateStatus(data:any) :ItemStatus {
 	}
 	return data+'' as ItemStatus;
 }
-function validateStoreIds(data:any) :number[] {
+function validateStores(data:any) :{store_id:number, there:boolean}[] {
 	if( !Array.isArray(data) ) throw new Error("store_ids: expected an array");
 	return data.map( d => {
-		if( typeof d !== "number" ) throw new Error("expected number for store_id");
-		if( d < 0 ) throw new Error("sotre_id: unexpected negative number");
-		return d;
+		const store_id = d.store_id;
+		if( typeof store_id !== "number" ) throw new Error("expected number for store_id");
+		if( store_id < 0 ) throw new Error("store_id: unexpected negative number");
+		return {
+			store_id,
+			there: !!d.there
+		};
 	});
 }

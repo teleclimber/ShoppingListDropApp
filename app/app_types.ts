@@ -31,19 +31,16 @@ export type ItemCurStatus = {
 
 export type Item = ItemData & ItemItemID & ItemCurStatus;
 
-// export interface Item extends ItemData {
-// 	item_id: number,
-// 	cur_status: ItemStatus
-// }
-
-export type StoreIds = {
-	store_ids: number[]
+// ItemStores tells whether the item can be found at the store.
+// "there" means "item can be found there"
+export type ItemStores = {
+	stores: {store_id:number, there:boolean}[]
 }
-export type ItemPlus = Item & StoreIds;
+export type ItemPlus = Item & ItemStores;
 
 export type InsertItem = ItemData & ItemCurStatus;
 
-export type InsertItemPlus = InsertItem & StoreIds;
+export type InsertItemPlus = InsertItem & ItemStores;
 
 export type UpdateItem = ItemItemID & ItemData & ItemCurStatus;
 
