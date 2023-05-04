@@ -114,16 +114,14 @@ export function upTo2(db :DB) {
 		"store_id" INTEGER,
 		"category_id" INTEGER
 	)`);
-
-	db.query(`ALTER TABLE "item_store"
-		ADD COLUMN "there" BOOLEAN
-	`);
-
-	db.query(`UPDATE item_store SET there = true`);
-
-	// TODO should we also drop the tables we eagerly created in 1 shop_list and shop_list_items?
+	db.query(`ALTER TABLE items ADD COLUMN generic BOOLEAN`);
+	db.query(`ALTER TABLE items_history ADD COLUMN generic BOOLEAN`);
 }
 
 export function downFrom2(db :DB) {
+	// A good downward migration function would take all the generic items
+	// and make the cat stores the item stores.
 	db.query(`DROP TABLE store_categories`);
+	db.query(`ALTER TABLE items DROP COLUMN generic`);
+	db.query(`ALTER TABLE items_history DROP COLUMN generic`);
 }

@@ -34,11 +34,11 @@ export async function postItem(ctx:Context) {
 
 	const item_data = validateItemData(data);
 	const cur_status = validateStatus(data.cur_status)
-	const stores = validateStores(data.stores);
+	const store_ids = validateStores(data.store_ids);
 
 	let new_id;
 	try {
-		new_id = await createItem( ctx.proxyId, item_data, cur_status, stores );
+		new_id = await createItem( ctx.proxyId, item_data, cur_status, store_ids );
 	}
 	catch(e) {
 		ctx.respondStatus(500, e);
@@ -64,10 +64,10 @@ export async function putItem(ctx:Context) {
 	const item_id = Number(params.id);
 	const item_data = validateItemData(data);
 	const cur_status = validateStatus(data.cur_status)
-	const stores = validateStores(data.stores);
+	const store_ids = validateStores(data.store_ids);
 
 	try {
-		await updateItem( item_id, ctx.proxyId, item_data, cur_status, stores );
+		await updateItem( item_id, ctx.proxyId, item_data, cur_status, store_ids );
 	}
 	catch(e) {
 		ctx.respondStatus(500, e);
@@ -166,7 +166,8 @@ function validateItemData(data:any) :ItemData {
 	return {
 		name: validateName(data.name),
 		description: validateDescription(data.description),
-		category_id: Number(data.category_id),	// TODO remember we're going to allow null...
+		category_id: Number(data.category_id),
+		generic: !!data.generic,
 		check_stock: !!data.check_stock,
 		deleted: null,
 		image: '',	//temp
@@ -200,15 +201,11 @@ function validateStatus(data:any) :ItemStatus {
 	}
 	return data+'' as ItemStatus;
 }
-function validateStores(data:any) :{store_id:number, there:boolean}[] {
+function validateStores(data:any) :number[] {
 	if( !Array.isArray(data) ) throw new Error("store_ids: expected an array");
 	return data.map( d => {
-		const store_id = d.store_id;
-		if( typeof store_id !== "number" ) throw new Error("expected number for store_id");
-		if( store_id < 0 ) throw new Error("store_id: unexpected negative number");
-		return {
-			store_id,
-			there: !!d.there
-		};
+		if( typeof d !== "number" ) throw new Error("expected number for store_id");
+		if( d < 0 ) throw new Error("sotre_id: unexpected negative number");
+		return d;
 	});
 }

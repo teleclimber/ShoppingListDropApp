@@ -17,6 +17,7 @@ export type ItemData = {
 	description: string,
 	image: string,
 	category_id: number,	// TODO consider making that number|null (we currently use -1)
+	generic: boolean,
 	check_stock: boolean,
 	deleted: Date|null
 }
@@ -34,7 +35,7 @@ export type Item = ItemData & ItemItemID & ItemCurStatus;
 // ItemStores tells whether the item can be found at the store.
 // "there" means "item can be found there"
 export type ItemStores = {
-	stores: {store_id:number, there:boolean}[]
+	store_ids: number[]
 }
 export type ItemPlus = Item & ItemStores;
 

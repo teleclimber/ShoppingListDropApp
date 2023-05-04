@@ -22,14 +22,15 @@ Deno.test({
 		const proxy_id = "abc";
 		const item_data:ItemData = {
 			category_id: 1,
+			generic: true,
 			check_stock: true,
 			deleted: null,
 			description: "test item 1",
 			image:"def.jpg",
 			name: "item1"
 		};
-		const stores = [{store_id:22, there:true},{store_id:77, there:false}]
-		const item_id = createItem(proxy_id, item_data, ItemStatus.stocked, stores);
+		const store_ids = [22, 77]
+		const item_id = createItem(proxy_id, item_data, ItemStatus.stocked, store_ids);
 
 		const items = getItems();
 		if( items.length !== 1 ) throw new Error("expected one item");
@@ -40,7 +41,7 @@ Deno.test({
 		const items_plus = getItemsPlus();
 		if( items_plus.length !== 1 ) throw new Error("expected one item");
 		const db_item_plus = items_plus[0];
-		const expected_item_plus = Object.assign({item_id, cur_status:ItemStatus.stocked, stores}, item_data);
+		const expected_item_plus = Object.assign({item_id, cur_status:ItemStatus.stocked, store_ids}, item_data);
 		assertEquals(db_item_plus, expected_item_plus);
 
 		const item_history = getItemHistory(item_id);
@@ -66,6 +67,7 @@ Deno.test({
 		const proxy_id = "abc";
 		const item_data:ItemData = {
 			category_id: 1,
+			generic: true,
 			check_stock: true,
 			deleted: null,
 			description: "test item 1",

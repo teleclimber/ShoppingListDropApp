@@ -120,13 +120,9 @@ function itemPlusFromRaw(data:any) :ItemPlus {
 		description: data.description+'',
 		image: "",
 		category_id: Number(data.category_id),
+		generic: !!data.generic,
 		check_stock: !!data.check_stock,
 		deleted: data.deleted ? new Date(data.Deleted) : null,
-		stores: Array.isArray(data.stores) ? data.stores.map( (s:any) => {
-			return {
-				store_id:Number(s.store_id),
-				there:!!s.there
-			};
-		}) : [] 
+		store_ids: Array.isArray(data.store_ids) ? data.store_ids.map( (s:any) => Number(s)) : []
 	}
 }

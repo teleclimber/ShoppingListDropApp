@@ -26,7 +26,8 @@ storesStore.loadData();
 const name = ref("");
 const description = ref("");
 const category_id = ref(-1);
-const stores :Ref<Map<number, boolean>> = ref(new Map);
+const generic = ref(true);
+const stores :Ref<Set<number>> = ref(new Set);
 const check_stock = ref(true);
 const cur_status :Ref<ItemStatus> = ref(ItemStatus.buy);
 
@@ -38,9 +39,10 @@ function setInitialValues() {
 		name.value = item.name;
 		description.value = item.description;
 		category_id.value = item.category_id;
-		stores.value = new Map;
-		item.stores.forEach( (s) => {
-			stores.value.set(s.store_id, s.there);
+		generic.value = item.generic;
+		stores.value = new Set;
+		item.store_ids.forEach( (s) => {
+			stores.value.add(s);
 		});
 		check_stock.value = item.check_stock;
 		cur_status.value = item.cur_status;
@@ -49,7 +51,8 @@ function setInitialValues() {
 		name.value = props.start_name || "";
 		description.value = "";
 		category_id.value = -1;
-		stores.value = new Map;
+		generic.value = true;
+		stores.value = new Set;
 		check_stock.value = true;
 		cur_status.value = ItemStatus.buy;
 	}
@@ -64,36 +67,32 @@ onMounted( () => {
 });
 
 // store_cat: store_id=> boolean. true if item is automatically in store based on category
-const stores_cat = computed( () => {
-	const ret :Map<number,boolean> = new Map;
+const cat_stores = computed( () => {
+	const ret :Set<number> = new Set;
 	const cat_id = category_id.value;
 	storesStore.sorted_stores.forEach( s => {
-		ret.set( s.value.store_id, s.value.categories.includes(cat_id) );
+		if( s.value.categories.includes(cat_id) ) ret.add( s.value.store_id, );
 	});
 	return ret;
 });
 
-const store_net = computed( () => {
-	const ret :Map<number,boolean> = new Map;
-	storesStore.sorted_stores.forEach( s => {
-		const store_id = s.value.store_id;
-		if( stores.value.has(store_id) ) {
-			const is_in = stores.value.get(store_id);
-			if( is_in === undefined ) throw new Error('unexpected undefined');
-			ret.set( store_id, is_in );
-		}
-		else {
-			const is_in = stores_cat.value.get(store_id);
-			if( is_in === undefined ) throw new Error('unexpected undefined');
-			ret.set( store_id, is_in );
-		}
-	});
-	return ret;
-});
-
-function setStore(store_id:number, is_in:boolean ){
-	stores.value.set(store_id, is_in);
-}
+// const store_net = computed( () => {
+// 	const ret :Map<number,boolean> = new Map;
+// 	storesStore.sorted_stores.forEach( s => {
+// 		const store_id = s.value.store_id;
+// 		if( stores.value.has(store_id) ) {
+// 			const is_in = stores.value.get(store_id);
+// 			if( is_in === undefined ) throw new Error('unexpected undefined');
+// 			ret.set( store_id, is_in );
+// 		}
+// 		else {
+// 			const is_in = stores_cat.value.get(store_id);
+// 			if( is_in === undefined ) throw new Error('unexpected undefined');
+// 			ret.set( store_id, is_in );
+// 		}
+// 	});
+// 	return ret;
+// });
 
 async function submitClicked() {
 	// name can't be blank
@@ -104,10 +103,12 @@ async function submitClicked() {
 		return;
 	}
 
-	const stores_data:{store_id:number, there:boolean}[] = [];
-	store_net.value.forEach( (there, store_id) => {
-		stores_data.push({store_id,there});
-	});
+	const store_ids :number[] = [];
+	if( !generic.value ) {
+		stores.value.forEach( (store_id) => {
+			store_ids.push(store_id);
+		});
+	}
 
 	if( props.mode === "add" ) {
 		await itemsStore.addItem({
@@ -115,10 +116,11 @@ async function submitClicked() {
 			description: description.value,
 			image: "",
 			category_id: category_id.value,
+			generic: generic.value,
 			check_stock: check_stock.value,
 			deleted: null,
 			cur_status: cur_status.value,
-			stores: stores_data
+			store_ids
 		});
 	}
 	else if( props.mode === "edit" ) {
@@ -128,10 +130,11 @@ async function submitClicked() {
 			description: description.value,
 			image: "",
 			category_id: category_id.value,
+			generic: generic.value,
 			check_stock: check_stock.value,
 			deleted: null,
 			cur_status: cur_status.value,
-			stores: stores_data
+			store_ids
 		});
 	}
 	else throw new Error("what is this mode?? "+props.mode);
@@ -196,33 +199,24 @@ function statusClass(s :ItemStatus) :string[] {
 					Stores:
 				</h4>
 				<div class="mt-1 border border-t-0 bg-white">
-					<div class="flex items-center border-t" 
-						:class="[store_net.get(store.value.store_id)? 'bg-yellow-100' : '']"
+					<label class="flex items-center border-t" :class="[generic ? 'bg-yellow-200' : '']">
+						<span class="px-4">
+							<input type="checkbox" v-model="generic" />
+						</span>
+						<span class="py-2 flex-grow italic font-medium">Generic item: stores determined by category</span>
+					</label>
+					<label class="flex items-center border-t" 
+						:class="[(generic && cat_stores.has(store.value.store_id)) 
+							|| (!generic && stores.has(store.value.store_id)) ? 'bg-yellow-100' : '']"
 						v-for="store in storesStore.sorted_stores">
 						<span class="px-4">
-							<input type="checkbox"
-								:id="'store-ckeck-' + store.value.store_id"
-								:checked="store_net.get(store.value.store_id)"
-								@input="setStore(store.value.store_id, !store_net.get(store.value.store_id))" />
+							<input v-if="generic" type="checkbox" v-model="cat_stores" :value="store.value.store_id" disabled />
+							<input v-else type="checkbox" v-model="stores" :value="store.value.store_id" />
 						</span>
-						<label :for="'store-ckeck-' + store.value.store_id" class="py-2 flex-grow">{{ store.value.name }}</label>
-						<span v-if="!stores.has(store.value.store_id)" 
-							class="px-4 text-gray-500">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
-							</svg>
-						</span>
-					</div>
+						<span class="py-2 flex-grow">{{ store.value.name }}</span>
+						
+					</label>
 				</div>
-				<p class="mt-1 italic text-gray-500 flex items-baseline">
-					<span class="whitespace-nowrap mr-1">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="inline align-text-bottom w-6 h-6">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
-						</svg>
-						:
-					</span>
-					determined by store categories
-				</p>
 			</div>
 
 			<div class="my-6 flex">

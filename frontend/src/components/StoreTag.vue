@@ -14,15 +14,11 @@ const store = computed( () => {
 
 const storeName = computed( () => {
 	return store.value === undefined ? '??' : store.value.name;
-})
-const classes = computed( () => {
-	if( store.value === undefined ) return ['bg-gray-50']
-	return ['bg-purple-100']
-})
-
+});
 </script>
 
 <template>
-	<span class="rounded-md px-1 text-sm whitespace-nowrap overflow-hidden overflow-ellipsis" :class="classes">{{ storeName }}</span>
-
+	<span v-if="store === undefined" class="bg-gray-50 text-gray-500">??</span>
+	<span v-else
+		class="rounded-md px-1 text-sm whitespace-nowrap overflow-hidden overflow-ellipsis bg-green-100 text-green-800">{{ storeName }}</span>
 </template>

@@ -85,6 +85,7 @@
 			name: item_name,
 			description: "",
 			category_id: -1,
+			generic: true,
 			check_stock: false,
 			cur_status: ItemStatus.buy,
 			image: "",

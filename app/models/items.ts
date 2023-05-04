@@ -3,11 +3,11 @@ import { ItemStatus, ItemData, UpdateItem, ItemHistory, ItemStatusData, Item, It
 
 const insertItemSQL = `
 INSERT INTO items
-("name", "description", "image", "category_id", "check_stock", "deleted", "cur_status") VALUES
-(:name,  :description,  :image,  :category_id,  :check_stock,  :deleted,  :cur_status)
+("name", "description", "image", "category_id", "generic", "check_stock", "deleted", "cur_status") VALUES
+(:name,  :description,  :image,  :category_id, :generic,  :check_stock,  :deleted,  :cur_status)
 `;
 
-export function createItem(proxy_id:string, data: ItemData, cur_status:ItemStatus, stores: {store_id:number, there:boolean}[] = []) :number {
+export function createItem(proxy_id:string, data: ItemData, cur_status:ItemStatus, store_ids: number[] = []) :number {
 	let item_id = -1;
 	db.handle.transaction( () => {
 		db.handle.query(insertItemSQL, Object.assign({cur_status}, data));
@@ -17,7 +17,7 @@ export function createItem(proxy_id:string, data: ItemData, cur_status:ItemStatu
 		insertItemHistory(item_id, proxy_id, datetime, data);
 		insertItemStatus(item_id, proxy_id, datetime, cur_status);
 
-		setItemStores(item_id, stores);
+		setItemStores(item_id, store_ids);
 	});
 	return item_id;
 }
@@ -28,13 +28,14 @@ name=:name,
 description=:description,
 image=:image,
 category_id=:category_id,
+generic=:generic,
 check_stock=:check_stock,
 deleted=:deleted,
 cur_status=:cur_status
 WHERE item_id=:item_id
 `;
 
-export function updateItem(item_id:number, proxy_id:string, data: ItemData, cur_status:ItemStatus, stores: {store_id:number, there:boolean}[] = []) {
+export function updateItem(item_id:number, proxy_id:string, data: ItemData, cur_status:ItemStatus, store_ids: number[] = []) {
 	db.handle.transaction( () => {
 		const update_item :UpdateItem = Object.assign({item_id, cur_status}, data);
 		db.handle.query(updateItemSQL, update_item);
@@ -43,7 +44,7 @@ export function updateItem(item_id:number, proxy_id:string, data: ItemData, cur_
 		insertItemHistory(item_id, proxy_id, datetime, data);
 		insertItemStatus(item_id, proxy_id, datetime, cur_status);
 		
-		setItemStores(item_id, stores);
+		setItemStores(item_id, store_ids);
 	});
 }
 
@@ -71,8 +72,8 @@ export function updateMultipleItemsStatus(item_ids:number[], proxy_id:string, st
 
 const insertItemHistorySQL = `
 INSERT INTO items_history
-("item_id", "proxy_id", "datetime", "name", "description", "image", "category_id", "check_stock", "deleted") VALUES
-(:item_id,  :proxy_id,  :datetime,  :name,  :description,  :image,  :category_id,  :check_stock,  :deleted)
+("item_id", "proxy_id", "datetime", "name", "description", "image", "category_id", "generic", "check_stock", "deleted") VALUES
+(:item_id,  :proxy_id,  :datetime,  :name,  :description,  :image,  :category_id,  :generic,  :check_stock,  :deleted)
 `;
 function insertItemHistory(item_id:number, proxy_id:string, datetime:Date, data:ItemData) {
 	const ins_history :ItemHistory = Object.assign({item_id, proxy_id, datetime}, data);
@@ -85,12 +86,12 @@ function insertItemStatus(item_id: number, proxy_id: string, datetime:Date, stat
 		+' VALUES (:item_id, :proxy_id, :datetime, :status)', ins_status);
 }
 
-function setItemStores(item_id:number, stores:{store_id:number, there:boolean}[]) {
+function setItemStores(item_id:number, store_ids:number[]) {
 	db.handle.transaction( () => {
 		db.handle.query('DELETE FROM item_store WHERE item_id = :item_id', {item_id});
-		stores.forEach( s => {
-			db.handle.query('INSERT INTO item_store	(item_id, store_id, there) VALUES (:item_id, :store_id, :there)',
-			{item_id, store_id:s.store_id, there: s.there});
+		store_ids.forEach( store_id => {
+			db.handle.query('INSERT INTO item_store	(item_id, store_id) VALUES (:item_id, :store_id)',
+			{item_id, store_id});
 		});
 	});
 }
@@ -100,7 +101,10 @@ function setItemStores(item_id:number, stores:{store_id:number, there:boolean}[]
 // getters:
 export function getItems() {
 	const rows = db.handle.queryEntries<Item>('SELECT * FROM items');
-	rows.forEach( r => r.check_stock = !!r.check_stock );	// make check_stock an actual boolean (it comes out as integer from DB)
+	rows.forEach( r => {
+		r.generic = !!r.generic;
+		r.check_stock = !!r.check_stock;
+	});
 	return rows;
 }
 
@@ -114,21 +118,17 @@ export function getItemsPlus() {
 }
 
 export function itemWithStores(item:Item) :ItemPlus {
-	const rows = db.handle.queryEntries<{store_id: number, there: boolean}>('SELECT store_id, there FROM item_store WHERE item_id = :item_id', {item_id:item.item_id});
-	return Object.assign({
-		stores: rows.map( r => {
-			return {
-				store_id: r.store_id,
-				there: !!r.there
-			}
-		})
-	}, item);
+	const rows = db.handle.queryEntries<{item_id:number, store_id: number}>('SELECT * FROM item_store WHERE item_id = :item_id', {item_id:item.item_id});
+	return Object.assign({store_ids: rows.map(r => r.store_id)}, item);
 }
 
 export function getItemHistory(item_id: number) {
 	const rows = db.handle.queryEntries<ItemHistory>('SELECT * FROM items_history WHERE item_id = :item_id', {item_id});
 	// TODO order by datetime descending, then also allow paging.
-	rows.forEach( r => r.check_stock = !!r.check_stock );	// make check_stock an actual boolean (it comes out as integer from DB)
+	rows.forEach( r => {	// maybe pull this out into its own function
+		r.generic = !!r.generic;
+		r.check_stock = !!r.check_stock;
+	});
 	return rows;
 }
 

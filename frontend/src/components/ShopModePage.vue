@@ -29,9 +29,9 @@ const items = computed( () => {
 	const store = storesStore.getStore(s);
 	return itemsStore.ordered_items.filter( (i) => {
 		if( i.value.cur_status !== ItemStatus.buy && i.value.cur_status !== ItemStatus.inCart ) return false;
-		if( i.value.store_ids.includes(s) ) return true;	// adapt for when we have negative stores.
-		if( i.value.category_id === -1 ) return true;	// no category => always include
-		if( store !== undefined && store.value.categories.includes(i.value.category_id) ) return true;
+		if( i.value.store_ids.includes(s) ) return true;
+		if( i.value.generic && store?.value.categories.includes(i.value.category_id) ) return true;
+		if( i.value.category_id === -1 && i.value.generic ) return true;	// no category AND no stores selected => always include
 		return false;
 	});
 });

@@ -6,7 +6,6 @@ import { useStoresStore } from '../stores/stores';
 const route = useRoute();
 
 const show = computed( () => {
-	console.log('route.query', route.query);
 	return route.query.hasOwnProperty('select-store');
 });
 
