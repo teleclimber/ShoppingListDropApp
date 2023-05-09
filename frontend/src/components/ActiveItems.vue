@@ -1,75 +1,74 @@
 <script setup lang="ts">
-	import { ShallowRef, Ref, ref, computed } from 'vue';
-	import { useItemsStore } from '../stores/items';
-	import { useCategoriesStore } from '../stores/categories';
-	import { ItemPlus, ItemStatus } from '../../../app/app_types';
+import { ShallowRef, Ref, ref, computed } from 'vue';
+import { useItemsStore } from '../stores/items';
+import { useCategoriesStore } from '../stores/categories';
+import { ItemPlus, ItemStatus } from '../../../app/app_types';
 
-	import ActiveItem from './ActiveItem.vue';
-	import StoreTag from './StoreTag.vue';
+import ActiveItem from './ActiveItem.vue';
+import StoreTag from './StoreTag.vue';
 import { useStoresStore } from '../stores/stores';
 import { useCollapsedCategoriesStore } from '../stores/collapsed_cats';
 
-	const expanded_item :Ref<number|undefined> = ref();
+const expanded_item :Ref<number|undefined> = ref();
 
-	const itemsStore = useItemsStore();
-	itemsStore.loadData();
+const itemsStore = useItemsStore();
+itemsStore.loadData();
 
-	const categoriesStore = useCategoriesStore();
-	categoriesStore.loadData();
+const categoriesStore = useCategoriesStore();
+categoriesStore.loadData();
 
-	const storesStore = useStoresStore();
-	storesStore.loadData();
+const storesStore = useStoresStore();
+storesStore.loadData();
 
-	const collapsedCatsStore = useCollapsedCategoriesStore();
+const collapsedCatsStore = useCollapsedCategoriesStore();
 
-	const categories_stores = computed( () => {
-		const ret :Map<number,Set<number>> = new Map;
-		if( !storesStore.is_loaded ) return ret;
-		storesStore.stores.forEach( s => {
-			s.value.categories.forEach( c => {
-				if( !ret.has(c) ) ret.set(c, new Set);
-				ret.get(c)!.add(s.value.store_id);
-			});
+const categories_stores = computed( () => {
+	const ret :Map<number,Set<number>> = new Map;
+	if( !storesStore.is_loaded ) return ret;
+	storesStore.stores.forEach( s => {
+		s.value.categories.forEach( c => {
+			if( !ret.has(c) ) ret.set(c, new Set);
+			ret.get(c)!.add(s.value.store_id);
 		});
-		return ret;
 	});
+	return ret;
+});
 
-	const filtered_items = computed( () => {
-		return itemsStore.ordered_items.filter( i => i.value.check_stock || i.value.cur_status === ItemStatus.buy );
-	});
+const filtered_items = computed( () => {
+	return itemsStore.ordered_items.filter( i => i.value.check_stock || i.value.cur_status === ItemStatus.buy );
+});
 
-	const catItems = computed( () => {
-		const ret :{cat_id: number, name: string, stores: Set<number>, items: ShallowRef<ItemPlus>[] }[] = [];
-		categoriesStore.sorted_categories.forEach( c => {
-			ret.push({
-				cat_id: c.value.category_id,
-				name: c.value.name,
-				stores: categories_stores.value.get(c.value.category_id) || new Set,
-				items: filtered_items.value.filter( i => i.value.category_id === c.value.category_id )
-			});
-		});
+const catItems = computed( () => {
+	const ret :{cat_id: number, name: string, stores: Set<number>, items: ShallowRef<ItemPlus>[] }[] = [];
+	categoriesStore.sorted_categories.forEach( c => {
 		ret.push({
-			cat_id: -1,
-			name: "",
-			stores: new Set,
-			items: filtered_items.value.filter( i => i.value.category_id === -1 )
+			cat_id: c.value.category_id,
+			name: c.value.name,
+			stores: categories_stores.value.get(c.value.category_id) || new Set,
+			items: filtered_items.value.filter( i => i.value.category_id === c.value.category_id )
 		});
-		return ret;
 	});
-
-	function collapseAllCats() {
-		const all_cats = Array.from(categoriesStore.categories.keys());
-		all_cats.push(-1);
-		collapsedCatsStore.collapse(all_cats);
-	}
-	function toggleExpandItem(item_id:number) {
-		if( item_id === expanded_item.value ) expanded_item.value = undefined;
-		else expanded_item.value = item_id;
-	}
-	const all_collapsed = computed( () => {
-		return !categoriesStore.sorted_categories.some( c => !collapsedCatsStore.cc.has(c.value.category_id));
+	ret.push({
+		cat_id: -1,
+		name: "",
+		stores: new Set,
+		items: filtered_items.value.filter( i => i.value.category_id === -1 )
 	});
+	return ret;
+});
 
+function collapseAllCats() {
+	const all_cats = Array.from(categoriesStore.categories.keys());
+	all_cats.push(-1);
+	collapsedCatsStore.collapse(all_cats);
+}
+function toggleExpandItem(item_id:number) {
+	if( item_id === expanded_item.value ) expanded_item.value = undefined;
+	else expanded_item.value = item_id;
+}
+const all_collapsed = computed( () => {
+	return !categoriesStore.sorted_categories.some( c => !collapsedCatsStore.cc.has(c.value.category_id));
+});
 </script>
 
 <template>
