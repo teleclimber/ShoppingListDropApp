@@ -2,6 +2,7 @@ import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { LoadState } from './common';
 import { Store, StoreData } from '../../../app/app_types';
+import { gFetch } from './response_guard';
 
 function storeFromRaw(raw:any) {
 	return {
@@ -24,7 +25,7 @@ export const useStoresStore = defineStore('stores', () => {
 	async function loadData() {
 		if( load_state.value !== LoadState.NotLoaded ) return;
 		load_state.value = LoadState.Loading;
-		const resp = await fetch("/api/stores");
+		const resp = await gFetch("/api/stores");
 		const data = await resp.json() as Store[];
 		if( !Array.isArray(data) ) throw new Error("expected an array");
 		data.forEach( d => {
@@ -36,7 +37,7 @@ export const useStoresStore = defineStore('stores', () => {
 	}
 
 	async function addStore(store_data:StoreData) :Promise<number> {
-		const resp = await fetch("/api/stores", {
+		const resp = await gFetch("/api/stores", {
 			method: "POST",
 			headers: {
 				'Accept': 'application/json',
@@ -54,7 +55,7 @@ export const useStoresStore = defineStore('stores', () => {
 	}
 
 	async function editStore(store_id: number, store_data:StoreData) :Promise<void> {
-		const resp = await fetch("/api/stores/"+store_id, {
+		const resp = await gFetch("/api/stores/"+store_id, {
 			method: "PUT",
 			headers: {
 				'Accept': 'application/json',

@@ -84,7 +84,7 @@ async function finishClicked() {
 	</div>
 
 	<Teleport to="#controls">
-		<div class=" py-4 px-4 h-full flex justify-end items-stretch">
+		<div class=" py-4 px-4 h-full flex justify-end items-stretch text-white">
 			<button 
 				@click="finishClicked"
 				class="px-2 border border-white flex items-center">

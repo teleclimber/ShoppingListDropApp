@@ -3,6 +3,7 @@ import HeaderTitle from './components/HeaderTitle.vue';
 import CurrentUser from './components/CurrentUser.vue';
 import Controls from './components/Controls.vue';
 import SelectStoreOverlay from './components/SelectStoreOverlay.vue';
+import RequestErrorOverlay from './components/RequestErrorOverlay.vue';
 
 </script>
 
@@ -28,6 +29,7 @@ import SelectStoreOverlay from './components/SelectStoreOverlay.vue';
 		
 	</div>
 	<SelectStoreOverlay></SelectStoreOverlay>
+	<RequestErrorOverlay class="z-50"></RequestErrorOverlay>
 </template>
 
 

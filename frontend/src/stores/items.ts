@@ -2,6 +2,7 @@ import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { LoadState } from './common';
 import {ItemPlus, InsertItemPlus, ItemStatus, ItemData, ItemCurStatus, ItemStores} from '../../../app/app_types';
+import { gFetch } from './response_guard';
 
 export const useItemsStore = defineStore('items', () => {
 	const load_state = ref(LoadState.NotLoaded);
@@ -12,7 +13,7 @@ export const useItemsStore = defineStore('items', () => {
 	async function loadData() {
 		if( load_state.value !== LoadState.NotLoaded ) return;
 		load_state.value = LoadState.Loading;
-		const resp = await fetch("/api/items");
+		const resp = await gFetch("/api/items");
 		const json = await resp.json() as ItemPlus[];
 		if( !Array.isArray(json) ) throw new Error("expected array for dropds, got "+typeof resp.json);
 		const it :Map<number,ShallowRef<ItemPlus>> = new Map; 
@@ -47,7 +48,7 @@ export const useItemsStore = defineStore('items', () => {
 		// next_item_id++;
 		// Here I'd really like for the UI to be very fast.
 		// So idally don't wait for the server to respond.
-		const resp = await fetch("/api/items", {
+		const resp = await gFetch("/api/items", {
 			method: "POST",
 			headers: {
 				'Accept': 'application/json',
@@ -65,7 +66,7 @@ export const useItemsStore = defineStore('items', () => {
 	}
 	async function editItem(item_id: number, update_item: ItemData & ItemCurStatus & ItemStores) {
 		const item = mustGetItem(item_id);
-		const resp = await fetch("/api/items/"+item_id, {
+		const resp = await gFetch("/api/items/"+item_id, {
 			method: "PUT",
 			headers: {
 				'Accept': 'application/json',
@@ -82,7 +83,7 @@ export const useItemsStore = defineStore('items', () => {
 	async function setItemStatus(item_id: number, cur_status: ItemStatus) {
 		const item = mustGetItem(item_id);
 		item.value = Object.assign({}, item.value, {cur_status});
-		const resp = await fetch("/api/items/"+item_id, {
+		const resp = await gFetch("/api/items/"+item_id, {
 			method: "PATCH",
 			headers: {
 				'Accept': 'application/json',
@@ -98,7 +99,7 @@ export const useItemsStore = defineStore('items', () => {
 			const item = mustGetItem(i);
 			item.value = Object.assign({}, item.value, {cur_status});
 		});
-		const resp = await fetch("/api/items", {
+		const resp = await gFetch("/api/items", {
 			method: "PATCH",
 			headers: {
 				'Accept': 'application/json',

@@ -2,6 +2,7 @@ import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { LoadState } from './common';
 import { Category, CategoryData } from '../../../app/app_types';
+import { gFetch } from './response_guard';
 
 // const cats = [
 // 	'Dairy',
@@ -37,7 +38,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 	async function loadData() {
 		if( load_state.value !== LoadState.NotLoaded ) return;
 		load_state.value = LoadState.Loading;
-		const resp = await fetch("/api/categories");
+		const resp = await gFetch("/api/categories");
 		const data = await resp.json() as Category[];
 		if( !Array.isArray(data) ) throw new Error("expected an array");
 		data.forEach( d => {
@@ -51,7 +52,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 	async function addCategory(category_data:CategoryData) :Promise<number> {
 		// For now set the sort order to be the last item (assumes existing items are sort_order are correct)
 		category_data.sort_order = categories.value.size;
-		const resp = await fetch("/api/categories", {
+		const resp = await gFetch("/api/categories", {
 			method: "POST",
 			headers: {
 				'Accept': 'application/json',
@@ -69,7 +70,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 	}
 
 	async function editCategory(category_id: number, category_data:CategoryData) :Promise<void> {
-		const resp = await fetch("/api/categories/"+category_id, {
+		const resp = await gFetch("/api/categories/"+category_id, {
 			method: "PUT",
 			headers: {
 				'Accept': 'application/json',
@@ -91,7 +92,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 		});
 		categories.value = new Map(categories.value);
 
-		const resp = await fetch("/api/categories/", {
+		const resp = await gFetch("/api/categories/", {
 			method: "PATCH",
 			headers: {
 				'Accept': 'application/json',

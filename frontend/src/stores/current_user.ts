@@ -2,6 +2,7 @@ import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { LoadState } from './common';
 import { User } from '../../../app/app_types';
+import { gFetch } from './response_guard';
 
 function userFromRaw(raw:any) :User {
 	return {
@@ -21,7 +22,7 @@ export const useCurrentUserStore = defineStore('current-user', () => {
 	async function loadData() {
 		if( load_state.value !== LoadState.NotLoaded ) return;
 		load_state.value = LoadState.Loading;
-		const resp = await fetch("/api/current-user");
+		const resp = await gFetch("/api/current-user");
 		const data = await resp.json();
 		user.value = userFromRaw(data);
 		load_state.value = LoadState.Loaded;

@@ -2,6 +2,7 @@ import { ShallowRef, shallowRef, ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { LoadState } from './common';
 import { User } from '../../../app/app_types';
+import { gFetch } from './response_guard';
 
 // this is not finished and is unused and may not be functional
 
@@ -23,7 +24,7 @@ export const useUsersStore = defineStore('users', () => {
 	async function loadData() {
 		if( load_state.value !== LoadState.NotLoaded ) return;
 		load_state.value = LoadState.Loading;
-		const resp = await fetch("/api/users");
+		const resp = await gFetch("/api/users");
 		const data = await resp.json();
 		if( !Array.isArray(data) ) throw new Error("expected data to be array");
 		const m:Map<string,User> = new Map;
