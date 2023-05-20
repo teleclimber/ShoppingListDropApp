@@ -6,7 +6,7 @@ export async function getCurrentUser(ctx:Context) {
 		ctx.respondWith(new Response("", {status:204}));	// 204 "no content" 
 		return;
 	}
-	const user = await app.getUser(ctx.proxyId);	// Don't love this because it implies we're dealing with "app". It should be "appspace"?
+	const user = await app.getUser(ctx.proxyId);
 	ctx.respondWith(Response.json(user));
 }
 

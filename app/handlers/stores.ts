@@ -1,6 +1,6 @@
 import type {Context} from "https://deno.land/x/dropserver_app@v0.2.1/mod.ts";
 
-import { getStores, getStore, createStore, editStore } from "../models/stores.ts";
+import { getStores, createStore, editStore } from "../models/stores.ts";
 import type { Store, StoreData } from '../app_types.ts';
 
 export async function getAllStores(ctx:Context) {

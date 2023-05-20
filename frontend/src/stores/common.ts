@@ -3,5 +3,3 @@ export enum LoadState {
 	Loading = 1,
 	Loaded = 2
 }
-
-//function 

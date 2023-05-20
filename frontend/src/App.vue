@@ -20,13 +20,10 @@ import RequestErrorOverlay from './components/RequestErrorOverlay.vue';
 		<Controls></Controls>
 		<main class="relative">
 			<!-- <UpdateApp></UpdateApp> -->
-
 			<div class=" md:px-6 ">
 				<router-view/>
 			</div>
 		</main>
-		<!-- <RequestErrorOverlay></RequestErrorOverlay> -->
-		
 	</div>
 	<SelectStoreOverlay></SelectStoreOverlay>
 	<RequestErrorOverlay class="z-50"></RequestErrorOverlay>

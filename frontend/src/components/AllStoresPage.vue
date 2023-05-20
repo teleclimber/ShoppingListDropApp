@@ -17,7 +17,7 @@ const store_cat_names = computed( () => {
 			if( a === undefined || b === undefined  ) return -1;
 			return a.sort_order - b.sort_order;
 		});
-		// @ts-ignore TS doesn't understand map chaned to filter apparently.
+		// @ts-ignore TS doesn't understand map chained to filter apparently.
 		ret.set(store.value.store_id, cats.filter(c => c !== undefined).map( c => c.name ));
 	});
 	return ret;

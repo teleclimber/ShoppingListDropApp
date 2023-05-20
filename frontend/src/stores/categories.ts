@@ -4,19 +4,6 @@ import { LoadState } from './common';
 import { Category, CategoryData } from '../../../app/app_types';
 import { gFetch } from './response_guard';
 
-// const cats = [
-// 	'Dairy',
-// 	'Fruits & Veg',
-// 	'Cereal',
-// 	'Frozen foods',
-// 	'Grains & Pasta',
-// 	'Sauces & Condiments',
-// 	'Alcohol',
-// 	'Meds & Hygiene',
-// 	'Clothing',
-// 	'Bedding & Linens'
-// ];
-
 function categoryFromRaw(raw:any) {
 	return {
 		category_id: Number(raw.category_id),

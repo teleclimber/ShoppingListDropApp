@@ -7,7 +7,6 @@ import { gFetch } from './response_guard';
 function userFromRaw(raw:any) :User {
 	return {
 		proxy_id: raw.proxyId+'',
-		//permissions: raw.permissions,
 		display_name: raw.displayName+'',
 		avatar: raw.avatar+''
 	};
