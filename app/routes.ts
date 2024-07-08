@@ -33,8 +33,18 @@ export default function createRoutes() {
 	r.add("get", "/", authorized, r.staticFileHandler({path:'@app/frontend/index.html'}));
 	r.add("get", {path: "/assets/", end: false}, authorized, r.staticFileHandler({path:'@app/frontend/assets/'}));
 	r.add("get", {path: "/static/", end: false}, authorized, r.staticFileHandler({path:'@app/frontend/static/'}));
+
+	// Paths that should return index.html
+	// These are from the frontend router. 
+	['/stores', '/add-store', '/edit-store',
+		'/categories', '/add-category', '/edit-category',
+		'/add', '/edit',
+		'/shop'].forEach( p => {
+			r.add("get", {path:p, end:false}, authorized, r.staticFileHandler({path:'@app/frontend/index.html'}));
+		});
+
 	// Any other path that gets requested gets the frontend index.
-	r.add("get", {path:"/", end:false}, authorized, r.staticFileHandler({path:'@app/frontend/index.html'}));
+	r.add("get", {path:"/", end:false}, authorized, r.staticFileHandler({path:'@app/frontend/'}));
 
 	return r.routes
 }

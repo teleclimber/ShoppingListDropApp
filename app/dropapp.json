@@ -1,4 +1,14 @@
 {
 	"name":	"Shopping List",
-	"version": "0.2.2"
+	"short-description": "Shopping List With Stock Tracking",
+	"version": "0.3.0",
+	"icon": "frontend/static/cart-192.png",
+	"accent-color": "#ec4899",
+	"authors": [{
+		"name": "Olivier Forget",
+		"email": "me@olivierforget.net",
+		"url": "https://olivierforget.net"
+	}],
+	"code": "https://github.com/teleclimber/ShoppingListDropApp",
+	"license": "MIT"
 }
