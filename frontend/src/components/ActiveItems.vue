@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ShallowRef, Ref, ref, computed } from 'vue';
+import { ShallowRef, Ref, ref, computed, watch } from 'vue';
 import { useItemsStore } from '../stores/items';
 import { useCategoriesStore } from '../stores/categories';
 import { ItemPlus, ItemStatus } from '../../../app/app_types';
@@ -49,10 +49,16 @@ const categories_stores = computed( () => {
 
 const filtered_items = computed( () => {
 	if( search_mode.value ) {
-		const re = new RegExp(search.value, "i")
-		return itemsStore.ordered_items.filter( i => re.test(i.value.name) );	
+		const s = search.value.toLocaleLowerCase();
+		return itemsStore.ordered_items.filter( i => i.value.name.toLocaleLowerCase().includes(s) );
 	}
 	return itemsStore.ordered_items.filter( i => i.value.check_stock || i.value.cur_status === ItemStatus.buy );
+});
+
+watch( [search_mode, search], (cur, old) => {
+	if( search_mode.value && old[1] !== cur[1] ) {	// if search is in effect and the search term has changed
+		window.scrollTo({top: 0, behavior: 'smooth'});
+	}
 });
 
 const catItems = computed( () => {
