@@ -30,6 +30,7 @@ export const useItemsStore = defineStore('items', () => {
 		items.value.forEach( i => {
 			ret.push(i);
 		});
+		ret.sort( (a, b) => a.value.name.localeCompare(b.value.name) );
 		return ret;
 	})
 
