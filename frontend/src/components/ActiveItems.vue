@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ShallowRef, Ref, ref, computed, watch } from 'vue';
-import { useItemsStore } from '../stores/items';
-import { useCategoriesStore } from '../stores/categories';
 import { ItemPlus, ItemStatus } from '../../../app/app_types';
 
 import ActiveItem from './ActiveItem.vue';
 import StoreTag from './StoreTag.vue';
 import QuickAdd from './QuickAdd.vue';
+
+import { useItemsStore } from '../stores/items';
+import { useCategoriesStore } from '../stores/categories';
+import { useMainListFilterStore } from '../stores/main_list_filter';
 import { useStoresStore } from '../stores/stores';
 import { useCollapsedCategoriesStore } from '../stores/collapsed_cats';
 
@@ -17,6 +19,8 @@ itemsStore.loadData();
 
 const categoriesStore = useCategoriesStore();
 categoriesStore.loadData();
+
+const mainListFilter = useMainListFilterStore();
 
 const storesStore = useStoresStore();
 storesStore.loadData();
@@ -52,7 +56,10 @@ const filtered_items = computed( () => {
 		const s = search.value.toLocaleLowerCase();
 		return itemsStore.ordered_items.filter( i => i.value.name.toLocaleLowerCase().includes(s) );
 	}
-	return itemsStore.ordered_items.filter( i => i.value.check_stock || i.value.cur_status === ItemStatus.buy );
+	const f = mainListFilter.get();
+	if( f === 'check-stock' ) return itemsStore.ordered_items.filter( i => i.value.check_stock );
+	else if( f === 'buy' ) return itemsStore.ordered_items.filter( i => i.value.cur_status === ItemStatus.buy );
+	else return itemsStore.ordered_items;
 });
 
 watch( [search_mode, search], (cur, old) => {
