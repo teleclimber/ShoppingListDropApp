@@ -37,7 +37,7 @@ function searchInput(e:Event) {
 	// The issue is input events don't fire unless you set this.
 }
 watch( search, (s) => {
-	emit('update:search', s);
+	emit('update:search', s.trim());
 });
 
 function addClicked() {
