@@ -220,8 +220,12 @@ function statusClass(s :ItemStatus) :string[] {
 			</div>
 
 			<div class="my-6 flex">
-				<input id="consumable" type="checkbox" v-model="check_stock" />
-				<label for="consumable" class="pl-1 font-medium text-gray-700">
+				<label for="consumable" class="py-2 px-4 uppercase font-bold border rounded-lg flex "
+					:class="check_stock ? ['bg-pink-500', 'border-pink-600', 'text-white'] : ['bg-white', 'border-gray-300']" >
+					<input id="consumable" type="checkbox" v-model="check_stock" />
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-3 mr-1 size-6">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+					</svg>
 					Check stock on this item
 				</label>
 			</div>
