@@ -1,3 +1,8 @@
 0.3.0
 
-This app is now a Progressive Web App.
+A number of improvements in this release:
+
+- This app is now a Progressive Web App.
+- The main page now has a filter: show all items, check-stock items, or all "buy" items.
+- New way to add an item: tap "Quick Add" to add it directly to the list of items.
+- Many more small tweaks and improvements.
