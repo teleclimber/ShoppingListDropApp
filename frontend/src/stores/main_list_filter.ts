@@ -3,8 +3,6 @@ import { defineStore } from 'pinia';
 
 export const useMainListFilterStore = defineStore('main-list-filter', () => {
 	const filters = ['all', 'check-stock', 'buy'];
-	const filterLabels = ['All Items', 'Check Stock Items', 'All Items To Buy'];
-
 	const f :Ref<string> = ref(filters[0]);
 
 	read();
@@ -17,20 +15,6 @@ export const useMainListFilterStore = defineStore('main-list-filter', () => {
 	function get() :string {
 		return f.value;
 	}
-	function getLabel() :string {
-		const index = filters.indexOf(f.value);
-		if( index === -1 ) return '???';
-		return filterLabels[index];
-	}
-	function getUIFilters() {
-		return filters.map( (f, i) => {
-			return {
-				key: f,
-				label: filterLabels[i]
-			}
-		});
-	}
-
 	function read() {
 		const stored_f = localStorage.getItem("main-list-filter");
 		if( stored_f && validate(stored_f) ) f.value = stored_f;
@@ -42,6 +26,6 @@ export const useMainListFilterStore = defineStore('main-list-filter', () => {
 		return filters.includes(maybe_f);
 	}
 
-	return { get, getLabel, set, getUIFilters };
+	return { get, set };
 });
 

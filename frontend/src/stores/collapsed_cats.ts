@@ -15,6 +15,10 @@ export const useCollapsedCategoriesStore = defineStore('collapsed-categories', (
 		cat_ids.forEach( c => cc.value.add(c) );
 		write();
 	}
+	function expandAll() {
+		cc.value.clear();
+		write();
+	}
 
 	function read() {
 		const s = localStorage.getItem("collapsed-categories");
@@ -27,5 +31,5 @@ export const useCollapsedCategoriesStore = defineStore('collapsed-categories', (
 		localStorage.setItem("collapsed-categories", Array.from(cc.value).join(','));
 	}
 
-	return { cc, toggle, collapse };
+	return { cc, toggle, collapse, expandAll };
 });
