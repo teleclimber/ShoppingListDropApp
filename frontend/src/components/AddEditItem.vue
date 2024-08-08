@@ -76,24 +76,6 @@ const cat_stores = computed( () => {
 	return ret;
 });
 
-// const store_net = computed( () => {
-// 	const ret :Map<number,boolean> = new Map;
-// 	storesStore.sorted_stores.forEach( s => {
-// 		const store_id = s.value.store_id;
-// 		if( stores.value.has(store_id) ) {
-// 			const is_in = stores.value.get(store_id);
-// 			if( is_in === undefined ) throw new Error('unexpected undefined');
-// 			ret.set( store_id, is_in );
-// 		}
-// 		else {
-// 			const is_in = stores_cat.value.get(store_id);
-// 			if( is_in === undefined ) throw new Error('unexpected undefined');
-// 			ret.set( store_id, is_in );
-// 		}
-// 	});
-// 	return ret;
-// });
-
 async function submitClicked() {
 	// name can't be blank
 	// ideally name should be unique? Or not?
@@ -179,8 +161,6 @@ function statusClass(s :ItemStatus) :string[] {
 						placeholder="Quick Description of item..." />
 				</div>
 			</div>
-
-			<!-- have image thumbnail here and button to delete it / open camera -->
 
 			<div class="my-4">
 				<label for="category" class="block text-sm font-medium text-gray-700">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ShallowRef, Ref, ref, computed, watch } from 'vue';
 import { ItemPlus, ItemStatus } from '../../../app/app_types';
+import { useRouter } from 'vue-router';
 
 import ActiveItem from './ActiveItem.vue';
 import StoreTag from './StoreTag.vue';
@@ -11,6 +12,8 @@ import { useCategoriesStore } from '../stores/categories';
 import { useMainListFilterStore } from '../stores/main_list_filter';
 import { useStoresStore } from '../stores/stores';
 import { useCollapsedCategoriesStore } from '../stores/collapsed_cats';
+
+const router = useRouter();
 
 const expanded_item :Ref<number|undefined> = ref();
 
@@ -28,6 +31,7 @@ storesStore.loadData();
 const collapsedCatsStore = useCollapsedCategoriesStore();
 
 const show_quick_add = ref(false);
+const show_inline_add = ref(false);
 const search = ref("");
 const search_mode = computed( () => {
 	return !!search.value;
@@ -66,6 +70,9 @@ watch( [search_mode, search], (cur, old) => {
 	if( search_mode.value && old[1] !== cur[1] ) {	// if search is in effect and the search term has changed
 		window.scrollTo({top: 0, behavior: 'smooth'});
 	}
+	if( old[1] !== cur[1] ) {
+		show_inline_add.value = false;
+	}
 });
 
 const catItems = computed( () => {
@@ -99,22 +106,48 @@ function toggleExpandItem(item_id:number) {
 const all_collapsed = computed( () => {
 	return !categoriesStore.sorted_categories.some( c => !collapsedCatsStore.cc.has(c.value.category_id));
 });
+
+function quickAddButtonClicked() {
+	if( show_inline_add.value )	router.push("/add?name="+encodeURIComponent(search.value));
+	else if( search.value.length > 0 ) show_inline_add.value = true;
+}
+
+async function addHere(cat_id:number) {
+	show_inline_add.value = false;
+	quick_add_comp.value?.selectAndFocus();
+	const new_item_id = await itemsStore.addItem({
+		name: search.value,
+		description: '',
+		image: "",
+		category_id: cat_id,
+		generic: true,
+		check_stock: false,
+		deleted: null,
+		cur_status: ItemStatus.buy,
+		store_ids: []
+	});
+	expanded_item.value = new_item_id;
+}
 </script>
 
 <template>
 	<div v-for="cItems in catItems">
-		<a 	class="block mt-6 text-2xl text-center"
-			:class="[cItems.name ? ['font-medium'] : ['italic', 'text-gray-400']]"
-			@click.stop.prevent="collapsedCatsStore.toggle(cItems.cat_id)"
-			v-if="!search_mode || cItems.items.length">
-			{{ cItems.name || '(No category)' }}
-			<svg v-if="collapsedCatsStore.cc.has(cItems.cat_id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="inline w-6 h-6">
-				<path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
-			</svg>
-			<svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="inline w-6 h-6">
-				<path fill-rule="evenodd" d="M11.47 7.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z" clip-rule="evenodd" />
-			</svg>
-		</a>
+		<div v-if="!search_mode || cItems.items.length || show_inline_add" class="mx-2 flex items-baseline" 
+			:class="show_inline_add ? ['justify-between', 'mt-3'] : ['justify-center', 'mt-6']">
+			<a 	class="block text-2xl text-center"
+				:class="[cItems.name ? ['font-medium'] : ['italic', 'text-gray-400']]"
+				@click.stop.prevent="collapsedCatsStore.toggle(cItems.cat_id)">
+				{{ cItems.name || '(No category)' }}
+				<svg v-if="collapsedCatsStore.cc.has(cItems.cat_id) && !search_mode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="inline w-6 h-6">
+					<path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
+				</svg>
+				<svg v-else-if="!search_mode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="inline w-6 h-6">
+					<path fill-rule="evenodd" d="M11.47 7.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z" clip-rule="evenodd" />
+				</svg>
+			</a>
+			<button v-if="show_inline_add" class="px-3 py-1 text-sm uppercase text-blue-600 border border-blue-600"
+				@click.stop.prevent="addHere(cItems.cat_id)">Add Here</button>
+		</div>
 		<template v-if="!collapsedCatsStore.cc.has(cItems.cat_id) && !search_mode">
 			<div class="my-1 flex flex-nowrap justify-center">
 				<StoreTag v-for="store_id in cItems.stores" :store_id="store_id" :positive="true" class="mx-1"></StoreTag>
@@ -122,7 +155,7 @@ const all_collapsed = computed( () => {
 			<div v-if="cItems.items.length === 0" class="text-center text-gray-500 italic">no items</div>
 		</template>
 		<ActiveItem
-			v-if="!collapsedCatsStore.cc.has(cItems.cat_id) || search_mode"
+			v-if="!collapsedCatsStore.cc.has(cItems.cat_id) || (search_mode && !show_inline_add)"
 			v-for="item in cItems.items"
 			:item="item.value"
 			:cat_stores="cItems.stores"
@@ -138,8 +171,10 @@ const all_collapsed = computed( () => {
 	<Teleport to="#controls">
 		<QuickAdd v-if="show_quick_add" 
 			ref="quick_add_comp"
+			:inline_add_mode="show_inline_add"
 			@update:search="s => search = s"
-			@close="search = ''; show_quick_add = false"></QuickAdd>
+			@add-clicked="quickAddButtonClicked"
+			@close="search = ''; show_inline_add = false; show_quick_add = false"></QuickAdd>
 		<div v-else class="py-4 h-full flex justify-between items-stretch text-white">
 			<button
 				@click="collapseAllCats"
