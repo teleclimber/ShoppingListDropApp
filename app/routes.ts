@@ -1,4 +1,4 @@
-import { RoutesBuilder, AuthAllow } from 'https://deno.land/x/dropserver_app@v0.2.1/mod.ts';
+import { RoutesBuilder, AuthAllow } from 'https://deno.land/x/dropserver_app@v0.2.2/mod.ts';
 import { getCurrentUser } from './handlers/users.ts';
 import { getAllItems, postItem, putItem, patchItemStatus, patchBatchItemsStatus } from './handlers/items.ts';
 import { getAllStores, postStore, putStore } from './handlers/stores.ts';

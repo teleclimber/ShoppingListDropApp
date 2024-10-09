@@ -1,4 +1,4 @@
-import type {Context} from "https://deno.land/x/dropserver_app@v0.2.1/mod.ts";
+import type {Context} from "https://deno.land/x/dropserver_app@v0.2.2/mod.ts";
 
 import { getCategories, editCategory, createCategory, editCategoriesOrder } from "../models/categories.ts";
 import type { Category, CategoryData } from '../app_types.ts';
@@ -8,7 +8,7 @@ export async function getAllCategories(ctx:Context) {
 	try {
 		categories = getCategories();
 	} catch(e) {
-		ctx.respondWith(new Response(e, {status:500}));
+		if (e instanceof Error) ctx.respondWith(new Response(e.toString(), {status:500}));
 		return;
 	}
 	ctx.respondWith(Response.json(categories));
@@ -22,7 +22,7 @@ export async function postCategory(ctx:Context) {
 		data = await ctx.request.json();
 	}
 	catch(e) {
-		ctx.respondStatus(400, e);
+		if (e instanceof Error) ctx.respondStatus(400, e.toString());
 		return;
 	}
 
@@ -33,7 +33,7 @@ export async function postCategory(ctx:Context) {
 		new_id = createCategory( category_data );
 	}
 	catch(e) {
-		ctx.respondStatus(500, e);
+		if (e instanceof Error) ctx.respondStatus(500, e.toString());
 		return;
 	}
 
@@ -49,7 +49,7 @@ export async function putCategory(ctx:Context) {
 		data = await ctx.request.json();
 	}
 	catch(e) {
-		ctx.respondStatus(400, e);
+		if (e instanceof Error) ctx.respondStatus(400, e.toString());
 		return;
 	}
 
@@ -60,7 +60,7 @@ export async function putCategory(ctx:Context) {
 		editCategory( category_id, category_data );
 	}
 	catch(e) {
-		ctx.respondStatus(500, e);
+		if (e instanceof Error) ctx.respondStatus(500, e.toString());
 		return;
 	}
 
@@ -76,7 +76,7 @@ export async function patchCategories(ctx:Context) {
 		data = await ctx.request.json();
 	}
 	catch(e) {
-		ctx.respondStatus(400, e);
+		if (e instanceof Error) ctx.respondStatus(400, e.toString());
 		return;
 	}
 
@@ -99,7 +99,7 @@ export async function patchCategories(ctx:Context) {
 		editCategoriesOrder(sorted);
 	}
 	catch(e) {
-		ctx.respondStatus(500, e);
+		if (e instanceof Error) ctx.respondStatus(500, e.toString());
 		return;
 	}
 

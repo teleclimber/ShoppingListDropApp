@@ -1,5 +1,5 @@
-import { DB } from "https://deno.land/x/sqlite@v3.7.0/mod.ts";
-import { assertEquals } from "https://deno.land/std@0.172.0/testing/asserts.ts";
+import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
+import { assertEquals } from "jsr:@std/assert";
 import '../../ds_test/index.ts';
 import {db} from '../db.ts';
 import {createCategory, getCategory, editCategoriesOrder} from './categories.ts';

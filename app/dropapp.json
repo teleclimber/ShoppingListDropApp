@@ -1,7 +1,7 @@
 {
 	"name":	"Shopping List",
 	"short-description": "Shopping List With Stock Tracking",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"icon": "frontend/static/cart-192.png",
 	"accent-color": "#ec4899",
 	"authors": [{

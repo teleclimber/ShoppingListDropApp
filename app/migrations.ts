@@ -1,8 +1,8 @@
-import {MigrationsBuilder} from 'https://deno.land/x/dropserver_app@v0.2.1/mod.ts';
+import {MigrationsBuilder} from 'https://deno.land/x/dropserver_app@v0.2.2/mod.ts';
 
 import app from './app.ts';
 import {db, getDBFile} from './db.ts';
-import type { DB } from "https://deno.land/x/sqlite@v3.7.0/mod.ts";
+import type { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
 
 export default function createMigrations() {
 	const m = new MigrationsBuilder;

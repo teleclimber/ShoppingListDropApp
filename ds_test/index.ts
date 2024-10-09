@@ -1,8 +1,8 @@
 // stub for dropserver lib to permit testing on Deno-only:
 // basically rip things off of denosandboxcode until you can get it to work.
 
-import type libSupportIface from 'https://deno.land/x/dropserver_lib_support@v0.2.0/mod.ts';
-import type {GetMigrationsCallback, GetAppRoutesCallback, User} from 'https://deno.land/x/dropserver_lib_support@v0.2.0/mod.ts';
+import type libSupportIface from 'https://deno.land/x/dropserver_lib_support@v0.2.1/mod.ts';
+import type {GetMigrationsCallback, GetAppRoutesCallback, User} from 'https://deno.land/x/dropserver_lib_support@v0.2.1/mod.ts';
 
 class Migrations {
 	setCallback(cb:GetMigrationsCallback) :void {
@@ -56,6 +56,6 @@ class LibSupport {
 	}
 }
 
-const w = <{["DROPSERVER"]?:libSupportIface}>window;
+const w = <{["DROPSERVER"]?:libSupportIface}>globalThis;
 const libSupport = new LibSupport();
 w["DROPSERVER"] = libSupport;
